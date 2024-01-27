@@ -1,11 +1,20 @@
-import { Button } from "@/components/ui/button";
-import { DataTableDemo } from "@/components/ui/data-table";
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import { Plus } from "lucide-react";
+import axios from "axios";
 import Link from "next/link";
 
-export default function Projects() {
+import { toast } from "sonner";
+import { Plus } from "lucide-react";
+
+import { columns } from "./components/columns";
+import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+
+import { DataTable } from "./components/data-table";
+
+export default async function Projects() {
+  const res = await axios.get("http://127.0.0.1:8000/project/index");
+  const data = await res.data.data.data;
+
   return (
     <>
       <Heading title="Projects" description="Wellcome in projects page.">
@@ -19,7 +28,12 @@ export default function Projects() {
 
       <Separator />
 
-      <p>Data Table here</p>
+      <DataTable
+        columns={columns}
+        data={data}
+        loading={false}
+        searchKey="title"
+      />
     </>
   );
 }
