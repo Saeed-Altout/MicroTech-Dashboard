@@ -3,8 +3,9 @@
 import { Trash, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEditModal } from "@/hooks/use-edit-modal";
+import { Project } from "../../projects/components/columns";
 
-export const CellAction = ({ data }: { data: any }) => {
+export const CellAction = ({ data }: { data: Project }) => {
   const editModal = useEditModal();
   return (
     <>
