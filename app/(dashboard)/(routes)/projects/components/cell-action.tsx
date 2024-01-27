@@ -1,8 +1,8 @@
 import { Trash, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Project } from "./columns";
+import { ProjectColumn } from "./columns";
 
-export const CellActions = ({ data }: { data: Project }) => {
+export const CellAction = ({ data }: { data: ProjectColumn }) => {
   return (
     <div className="w-fit ml-auto flex items-center gap-5">
       <Button variant="ghost" size="icon" onClick={() => {}}>

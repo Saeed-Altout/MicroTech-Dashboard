@@ -55,7 +55,7 @@ export const Members = ({ form, data }: { form: any; data: any }) => {
               </FormControl>
               <SelectContent>
                 <SelectGroup>
-                  {data?.map(({ id, name }, index) => (
+                  {data?.map(({ name }: any, index: Key) => (
                     <SelectItem
                       key={index}
                       value={name}
@@ -112,7 +112,7 @@ export const Platforms = ({ form, data }: { form: any; data: any }) => {
               </FormControl>
               <SelectContent>
                 <SelectGroup>
-                  {data?.map(({ id, name }, index) => (
+                  {data?.map(({ name }: any, index: Key) => (
                     <SelectItem
                       key={index}
                       value={name}
@@ -169,7 +169,7 @@ export const WorkTypes = ({ form, data }: { form: any; data: any }) => {
               </FormControl>
               <SelectContent>
                 <SelectGroup>
-                  {data?.map(({ id, name }, index) => (
+                  {data?.map(({ name }: any, index: Key) => (
                     <SelectItem
                       key={index}
                       value={name}
@@ -226,7 +226,7 @@ export const Tools = ({ form, data }: { form: any; data: any }) => {
               </FormControl>
               <SelectContent>
                 <SelectGroup>
-                  {data?.map(({ id, name }, index) => (
+                  {data?.map(({ name }: any, index: Key) => (
                     <SelectItem
                       key={index}
                       value={name}
@@ -283,7 +283,7 @@ export const Technologies = ({ form, data }: { form: any; data: any }) => {
               </FormControl>
               <SelectContent>
                 <SelectGroup>
-                  {data?.map(({ id, name }, index) => (
+                  {data?.map(({ name }: any, index: Key) => (
                     <SelectItem
                       key={index}
                       value={name}

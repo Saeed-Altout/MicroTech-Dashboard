@@ -5,9 +5,9 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Switch } from "@/components/ui/switch";
 
-import { CellActions } from "./cell-action";
+import { CellAction } from "./cell-action";
 
-export type Project = {
+export type ProjectColumn = {
   id: number | string;
   title: string;
   description: string;
@@ -84,7 +84,7 @@ export type Project = {
   }[];
 };
 
-export const columns: ColumnDef<Project>[] = [
+export const columns: ColumnDef<ProjectColumn>[] = [
   {
     accessorKey: "logo_url",
     header: "Logo",
@@ -116,6 +116,6 @@ export const columns: ColumnDef<Project>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <CellActions data={row.original} />,
+    cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
