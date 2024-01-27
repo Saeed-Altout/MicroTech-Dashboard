@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { Client } from "./components/client";
-import { columns } from "./components/columns";
+import { columns, TechnologyColumn } from "./components/columns";
 
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";

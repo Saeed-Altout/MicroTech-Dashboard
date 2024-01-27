@@ -6,8 +6,11 @@ import { CellAction } from "./cell-action";
 import Image from "next/image";
 
 export type TechnologyColumn = {
-  id: string;
+  id: number | string;
   name: string;
+  number_project: number | string;
+  created_at: string;
+  updated_at: string;
   icon_url: string;
 };
 
