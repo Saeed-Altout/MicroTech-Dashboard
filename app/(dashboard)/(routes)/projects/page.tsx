@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Plus } from "lucide-react";
 
-import { columns } from "./components/columns";
+import { columns, ProjectColumn } from "./components/columns";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
