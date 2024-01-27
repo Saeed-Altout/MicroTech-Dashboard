@@ -6,7 +6,9 @@ import { columns } from "./components/columns";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 export default async function Technologies() {
-  const res = await axios.get("http://127.0.0.1:8000/technology/index");
+  const res = await axios.get(
+    "https://backend.microtechdev.com/micro_tech/technology/index"
+  );
   const data = await res.data.data;
   return (
     <>

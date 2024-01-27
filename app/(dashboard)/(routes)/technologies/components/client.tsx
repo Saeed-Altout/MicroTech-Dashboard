@@ -13,7 +13,7 @@ export const Client = () => {
       <CreateModal
         title="Create Technology"
         description="Add a new technology"
-        url="http://127.0.0.1:8000/technology/create"
+        url="https://backend.microtechdev.com/micro_tech/technology/create"
       />
       <Heading
         title="Technologies"
