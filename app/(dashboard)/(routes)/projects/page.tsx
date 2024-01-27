@@ -12,10 +12,10 @@ import { Separator } from "@/components/ui/separator";
 import { DataTable } from "./components/data-table";
 
 export default async function Projects() {
-  const res = await axios.get(
+  const res = axios.get(
     "https://backend.microtechdev.com/micro_tech/project/index"
   );
-  const data = await res.data.data.data;
+  const data = res;
 
   return (
     <>

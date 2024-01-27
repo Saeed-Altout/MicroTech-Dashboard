@@ -6,10 +6,11 @@ import { columns } from "./components/columns";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 export default async function Technologies() {
-  const res = await axios.get(
+  const res = axios.get(
     "https://backend.microtechdev.com/micro_tech/technology/index"
   );
-  const data = await res.data.data;
+  const data = res;
+
   return (
     <>
       <Client />
