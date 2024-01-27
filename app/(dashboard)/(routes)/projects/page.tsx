@@ -1,7 +1,6 @@
 import axios from "axios";
 import Link from "next/link";
 
-import { toast } from "sonner";
 import { Plus } from "lucide-react";
 
 import { columns } from "./components/columns";
@@ -12,10 +11,10 @@ import { Separator } from "@/components/ui/separator";
 import { DataTable } from "./components/data-table";
 
 export default async function Projects() {
-  const res = axios.get(
+  const res = await axios.get(
     "https://backend.microtechdev.com/micro_tech/project/index"
   );
-  const data = res;
+  const data: ProjectColumn[] = res.data.data.data;
 
   return (
     <>
