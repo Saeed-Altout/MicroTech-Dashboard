@@ -23,3 +23,8 @@ export const projectSchema = z.object({
   platforms: z.array(z.string()),
   members: z.array(z.string()),
 });
+
+export const itemSchema = z.object({
+  name: z.string(),
+  icon: z.string(),
+});

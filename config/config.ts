@@ -77,3 +77,14 @@ export const routes = [
     ],
   },
 ];
+
+interface Item {
+  id: number | string;
+  name: string;
+  number_project: number | string;
+  created_at: string;
+  updated_at: string;
+  icon_url: string;
+}
+
+export interface TechnologyColumn extends Item {}

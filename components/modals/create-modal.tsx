@@ -1,13 +1,17 @@
 "use client";
 
-import * as z from "zod";
+import Image from "next/image";
+import { ChangeEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import axios from "axios";
+import { Check, ImageIcon } from "lucide-react";
+import { toast } from "sonner";
+
+import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { ChangeEvent, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Modal } from "@/components/ui/modal";
-import { Input } from "@/components/ui/input";
+
 import {
   Form,
   FormControl,
@@ -17,33 +21,33 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Modal } from "@/components/ui/modal";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useCreateModal } from "@/hooks/use-create-modal";
-import { Check, ImageIcon } from "lucide-react";
-import Image from "next/image";
-import { toast } from "sonner";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 
-const formSchema = z.object({
-  name: z.string(),
-  icon: z.string(),
-});
+import { useCreateModal } from "@/hooks/use-create-modal";
+import { itemSchema } from "@/schemas";
 interface CreateModalProps {
   title: string;
   description: string;
-  url: string;
+  enterypoint: string;
 }
+
 export const CreateModal: React.FC<CreateModalProps> = ({
   title,
   description,
-  url,
+  enterypoint,
 }) => {
-  const createModal = useCreateModal();
   const [loading, setLoading] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
+
+  const createModal = useCreateModal();
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+
+  const form = useForm<z.infer<typeof itemSchema>>({
+    resolver: zodResolver(itemSchema),
     defaultValues: {
       name: "",
       icon: "",
@@ -72,27 +76,30 @@ export const CreateModal: React.FC<CreateModalProps> = ({
     }
   };
 
-  const onClose = () => {
-    setFiles([]);
+  const onCancel = () => {
     createModal.onClose();
+    setFiles([]);
     form.reset({
       name: "",
       icon: "",
     });
   };
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+
+  const onSubmit = async (values: z.infer<typeof itemSchema>) => {
     let newFormData = new FormData();
     newFormData.append("name", values.name);
     newFormData.append("icon", files[0]);
 
     try {
       setLoading(true);
-      if (loading) {
-        toast.loading("Creating a new item...");
-      }
-      await axios.post(url, newFormData);
-      toast.success("New item created!");
-      onClose();
+
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/${enterypoint}/create`,
+        newFormData
+      );
+
+      toast.success("New technology created!");
+      onCancel();
       router.refresh();
     } catch (error) {
       //@ts-ignore
@@ -102,12 +109,21 @@ export const CreateModal: React.FC<CreateModalProps> = ({
     }
   };
 
+  useEffect(() => {
+    setIsMounted(true);
+  });
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <Modal
       title={title}
       description={description}
       isOpen={createModal.isOpen}
       onClose={createModal.onClose}
+      loading={loading}
     >
       <div className="space-y-4 py-2 pb-4">
         <div className="space-y-2">
@@ -182,12 +198,12 @@ export const CreateModal: React.FC<CreateModalProps> = ({
                   disabled={loading}
                   variant="outline"
                   type="button"
-                  onClick={onClose}
+                  onClick={onCancel}
                 >
                   Cancel
                 </Button>
                 <Button disabled={loading} type="submit">
-                  Continue {loading && <Spinner className="ml-2 text-white" />}
+                  Create {loading && <Spinner className="ml-2 text-white" />}
                 </Button>
               </div>
             </form>

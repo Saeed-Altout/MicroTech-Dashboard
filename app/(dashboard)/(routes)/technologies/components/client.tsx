@@ -1,8 +1,10 @@
 "use client";
 
 import { Plus } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
+
 import { CreateModal } from "@/components/modals/create-modal";
 import { useCreateModal } from "@/hooks/use-create-modal";
 
@@ -13,7 +15,7 @@ export const Client = () => {
       <CreateModal
         title="Create Technology"
         description="Add a new technology"
-        url="https://backend.microtechdev.com/micro_tech/technology/create"
+        enterypoint="technology"
       />
       <Heading
         title="Technologies"

@@ -1,18 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { TechnologyColumn } from "@/config/config";
 import { CellAction } from "./cell-action";
-import Image from "next/image";
-
-export type TechnologyColumn = {
-  id: number | string;
-  name: string;
-  number_project: number | string;
-  created_at: string;
-  updated_at: string;
-  icon_url: string;
-};
 
 export const columns: ColumnDef<TechnologyColumn>[] = [
   {
@@ -43,6 +35,6 @@ export const columns: ColumnDef<TechnologyColumn>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => <CellAction item={row.original} />,
   },
 ];

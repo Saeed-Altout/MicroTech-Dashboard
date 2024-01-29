@@ -1,13 +1,17 @@
 "use client";
 
-import * as z from "zod";
-import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { ChangeEvent, useState } from "react";
+import Image from "next/image";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Modal } from "@/components/ui/modal";
-import { Input } from "@/components/ui/input";
+
+import axios from "axios";
+import { toast } from "sonner";
+import { Check, ImageIcon } from "lucide-react";
+
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Form,
   FormControl,
@@ -17,38 +21,41 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Modal } from "@/components/ui/modal";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Check, ImageIcon } from "lucide-react";
-import Image from "next/image";
-import { toast } from "sonner";
-import { Spinner } from "../ui/spinner";
-import { useEditModal } from "@/hooks/use-edit-modal";
+import { Spinner } from "@/components/ui/spinner";
 
-const formSchema = z.object({
-  name: z.string(),
-  icon: z.string(),
-});
+import { itemSchema } from "@/schemas";
+
 interface EditModalProps {
   title: string;
   description: string;
-  url: string;
+  isOpen: boolean;
+  onClose: () => void;
+  entrypoint: string;
   data: any;
 }
+
 export const EditModal: React.FC<EditModalProps> = ({
   title,
   description,
-  url,
+  isOpen,
+  onClose,
+  entrypoint,
   data,
 }) => {
-  const editModal = useEditModal();
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
+
   const router = useRouter();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+
+  const form = useForm<z.infer<typeof itemSchema>>({
+    resolver: zodResolver(itemSchema),
     defaultValues: {
-      name: "",
-      icon: "",
+      name: data?.name || "",
+      icon: data?.icon_url || "",
     },
   });
 
@@ -74,27 +81,33 @@ export const EditModal: React.FC<EditModalProps> = ({
     }
   };
 
-  const onClose = () => {
+  const onCancel = () => {
     setFiles([]);
-    editModal.onClose();
-    form.reset({
-      name: "",
-      icon: "",
-    });
+    onClose();
   };
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+
+  const onSubmit = async (values: z.infer<typeof itemSchema>) => {
     let newFormData = new FormData();
+
+    if (files[0] !== undefined && data?.id) {
+      newFormData.append("id", data?.id.toString());
+      newFormData.append("name", values.name);
+      newFormData.append("icon", files[0]);
+    }
+
+    newFormData.append("id", data?.id.toString());
     newFormData.append("name", values.name);
-    newFormData.append("icon", files[0]);
 
     try {
       setLoading(true);
-      if (loading) {
-        // toast.loading("Edit a new item...");
-      }
-      await axios.post(url, newFormData);
-      // toast.success("New item created!");
-      onClose();
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/${entrypoint}/edit`,
+        newFormData
+      );
+
+      toast.success(`${data?.name} edited!`);
+      onCancel();
+
       router.refresh();
     } catch (error) {
       //@ts-ignore
@@ -104,12 +117,20 @@ export const EditModal: React.FC<EditModalProps> = ({
     }
   };
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
   return (
     <Modal
       title={title}
       description={description}
-      isOpen={editModal.isOpen}
-      onClose={editModal.onClose}
+      isOpen={isOpen}
+      onClose={onCancel}
+      loading={loading}
     >
       <div className="space-y-4 py-2 pb-4">
         <div className="space-y-2">
@@ -189,7 +210,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                   Cancel
                 </Button>
                 <Button disabled={loading} type="submit">
-                  Continue {loading && <Spinner className="ml-2 text-white" />}
+                  Save {loading && <Spinner className="ml-2 text-white" />}
                 </Button>
               </div>
             </form>
