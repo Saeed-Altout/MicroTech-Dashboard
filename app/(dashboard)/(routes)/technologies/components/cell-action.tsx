@@ -12,7 +12,7 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { EditModal } from "@/components/modals/edit-modal";
 import { TechnologyColumn } from "@/config/config";
 
-export const CellAction = ({ item }: { item: TechnologyColumn }) => {
+export const CellAction = ({ data }: { data: TechnologyColumn }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isDelete, setIsDelete] = useState<boolean>(false);
@@ -23,10 +23,10 @@ export const CellAction = ({ item }: { item: TechnologyColumn }) => {
     try {
       setLoading(true);
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/technology/delete?id=${item?.id}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/technology/delete?id=${data?.id}`
       );
 
-      toast.success(`${item?.name} deleted!`);
+      toast.success(`${data?.name} deleted!`);
       setIsDelete(false);
 
       router.refresh();
@@ -53,10 +53,10 @@ export const CellAction = ({ item }: { item: TechnologyColumn }) => {
         entrypoint="technology"
         isOpen={isEdit}
         onClose={() => setIsEdit(false)}
-        data={item}
+        data={data}
       />
 
-      <div className="flex items-center justify-center gap-5">
+      <div className="flex datas-center justify-center gap-5">
         <Button variant="ghost" size="icon" onClick={() => setIsEdit(true)}>
           <span className="sr-only">Edit</span>
           <Edit className="h-5 w-5" />

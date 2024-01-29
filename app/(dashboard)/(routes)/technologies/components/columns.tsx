@@ -35,6 +35,6 @@ export const columns: ColumnDef<TechnologyColumn>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <CellAction item={row.original} />,
+    cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];
