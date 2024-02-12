@@ -1,9 +1,11 @@
+import { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 
-export const Logo = () => {
+export const Logo = ({ className }: HTMLAttributes<HTMLElement>) => {
   return (
-    <Link href="/" className="relative w-40 h-16">
+    <Link href="/" className={cn("relative w-40 h-16", className)}>
       <Image src="/logo.svg" fill alt="Logo" className="object-contain" />
     </Link>
   );

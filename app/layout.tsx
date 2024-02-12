@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+
 import { cn } from "@/lib/utils";
+
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+
+import "./globals.css";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,7 +40,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(poppins.className, "font-poppins")}>
+      <body className={cn(poppins.className, "!font-poppins")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
