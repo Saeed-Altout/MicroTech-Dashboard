@@ -117,7 +117,6 @@ export const columns: ColumnDef<ProjectColumn>[] = [
   },
   {
     id: "actions",
-    header: "Actions",
     cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];

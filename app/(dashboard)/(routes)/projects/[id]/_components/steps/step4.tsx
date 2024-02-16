@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 import { useStep } from "@/hooks/use-step";
+import { useProjectStore } from "@/hooks/use-project-store";
 
 interface Step4Props {
   form: any;
@@ -17,6 +18,7 @@ interface Step4Props {
 
 export const Step4 = ({ form, initialData }: Step4Props) => {
   const [loading, setLoading] = useState(false);
+  const { files } = useProjectStore();
 
   const step = useStep();
   const router = useRouter();
@@ -29,9 +31,18 @@ export const Step4 = ({ form, initialData }: Step4Props) => {
       setLoading(true);
 
       const values = await form.getValues();
-      initialData
-        ? await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/project/edit`, {
+      let newFormData = new FormData();
+
+      newFormData.append("cover", files.cover[0]);
+      newFormData.append("logo", files.logo[0]);
+
+      if (initialData) {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/project/edit`,
+          {
             id: initialData.id,
+            cover: newFormData.get("cover"),
+            logo: newFormData.get("logo"),
             title: values.title,
             about: values.about,
             description: values.description,
@@ -43,29 +54,45 @@ export const Step4 = ({ form, initialData }: Step4Props) => {
             platform_ids: values.platforms,
             member_ids: values.members,
             work_type_ids: values.work_types,
-          })
-        : await axios.post(
-            `${process.env.NEXT_PUBLIC_BASE_URL}/project/create`,
-            {
-              title: values.title,
-              about: values.about,
-              description: values.description,
-              advantages: values.advantages,
-              functionality: values.functionality,
-              links: values.links,
-              technology_ids: values.technologies,
-              tool_ids: values.tools,
-              platform_ids: values.platforms,
-              member_ids: values.members,
-              work_type_ids: values.work_types,
-            }
-          );
+          },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data", // Make sure to set the proper content type
+            },
+          }
+        );
+      } else {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/project/create`,
+          {
+            cover: newFormData.get("cover"),
+            logo: newFormData.get("logo"),
+            title: values.title,
+            about: values.about,
+            description: values.description,
+            advantages: values.advantages,
+            functionality: values.functionality,
+            links: values.links,
+            technology_ids: values.technologies,
+            tool_ids: values.tools,
+            platform_ids: values.platforms,
+            member_ids: values.members,
+            work_type_ids: values.work_types,
+          },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data", // Make sure to set the proper content type
+            },
+          }
+        );
+      }
 
       toast.success(
         initialData ? `${initialData.title} edited!` : "New project created!"
       );
 
       router.push("/projects");
+      router.refresh();
       step.reset();
     } catch (error) {
       //@ts-ignore

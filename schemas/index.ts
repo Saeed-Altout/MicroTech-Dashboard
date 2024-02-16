@@ -1,21 +1,33 @@
 import * as z from "zod";
 export const projectSchema = z.object({
-  title: z.string().min(1),
-  functionality: z.string().min(1),
-  about: z.string().min(1),
-  description: z.string().min(1),
-  advantages: z.array(z.string().min(1)),
+  cover: z.string().min(1, { message: "Cover is required" }),
+  logo: z.string().min(1, { message: "Logo is required" }),
+  title: z
+    .string()
+    .min(4, { message: "Title must be at least 4 characters long" }),
+  functionality: z.string().min(1, { message: "Functionality is required" }),
+  about: z.string().min(1, { message: "About is required" }),
+  description: z.string().min(1, { message: "Description is required" }),
+  advantages: z.array(
+    z.string().min(1, { message: "Advantages must not be empty" })
+  ),
   links: z.array(
     z.object({
-      link: z.string().min(1),
-      platform: z.string().min(1),
+      link: z.string().min(1, { message: "Link is required" }),
+      platform: z.string().min(1, { message: "Platform is required" }),
     })
   ),
-  technologies: z.array(z.number().min(1)),
-  tools: z.array(z.number().min(1)),
-  work_types: z.array(z.number().min(1)),
-  platforms: z.array(z.number().min(1)),
-  members: z.array(z.number().min(1)),
+  technologies: z.array(
+    z.number().min(1, { message: "Technologies must not be empty" })
+  ),
+  tools: z.array(z.number().min(1, { message: "Tools must not be empty" })),
+  work_types: z.array(
+    z.number().min(1, { message: "Work types must not be empty" })
+  ),
+  platforms: z.array(
+    z.number().min(1, { message: "Platforms must not be empty" })
+  ),
+  members: z.array(z.number().min(1, { message: "Members must not be empty" })),
 });
 
 export const itemSchema = z.object({

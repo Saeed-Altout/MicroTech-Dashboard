@@ -50,7 +50,7 @@ export const Step3 = ({ form, constant }: Step3Props) => {
           label="Create Technology"
         />
         <FormSelect
-          items={constant.tools}
+          items={constant.toolsKit}
           form={form}
           name="tools"
           heading="Tools-Kit"
@@ -74,7 +74,7 @@ export const Step3 = ({ form, constant }: Step3Props) => {
           label="Create Platform"
         />
         <FormSelect
-          items={constant.work_types}
+          items={constant.workTypes}
           form={form}
           name="work_types"
           heading="Work Types"

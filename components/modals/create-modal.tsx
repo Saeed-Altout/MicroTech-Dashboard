@@ -65,15 +65,21 @@ export const CreateModal: React.FC<CreateModalProps> = ({
 
   const onSubmit = async (values: z.infer<typeof itemSchema>) => {
     let newFormData = new FormData();
-
-    newFormData.append("name", values.name);
-    newFormData.append("icon", files[0]);
+    await newFormData.append("icon", files[0]);
 
     try {
       setLoading(true);
       await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/${enterypoint}/create`,
-        newFormData
+        {
+          name: values.name,
+          icon: newFormData.get("icon"),
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Make sure to set the proper content type
+          },
+        }
       );
 
       toast.success("New item created!");

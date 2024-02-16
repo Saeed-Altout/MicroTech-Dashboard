@@ -1,19 +1,16 @@
+import axios from "axios";
+
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 
 import { FormProject } from "./_components/form-project";
 
 import { findUniq } from "@/helpers/findUniq";
-import { findMany } from "@/helpers/findMany";
 
 export default async function NewProject({ params }: { params: { id: any } }) {
-  const constant = {
-    technologies: await findMany({ entrypoint: "technology" }),
-    tools: await findMany({ entrypoint: "tool" }),
-    members: await findMany({ entrypoint: "member" }),
-    work_types: await findMany({ entrypoint: "work_types" }),
-    platforms: await findMany({ entrypoint: "platform" }),
-  };
+  const constant = await axios
+    .get(`${process.env.NEXT_PUBLIC_BASE_URL}/project/get_groups`)
+    .then((res) => res.data.data);
 
   const initialData = await findUniq({
     id: params.id,

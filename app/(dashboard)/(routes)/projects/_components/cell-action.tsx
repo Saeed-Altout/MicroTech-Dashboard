@@ -6,13 +6,21 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash, Edit } from "lucide-react";
+import {
+  Trash,
+  Edit,
+  RefreshCcw,
+  Loader,
+  ImagePlus,
+  Stars,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
 import { AlertModal } from "@/components/modals/alert-modal";
 import { ProjectColumn } from "@/config/config";
+import { Spinner } from "@/components/ui/spinner";
 
 export const CellAction = ({ data }: { data: ProjectColumn }) => {
   const router = useRouter();
@@ -38,6 +46,8 @@ export const CellAction = ({ data }: { data: ProjectColumn }) => {
       setLoading(false);
     }
   };
+
+  console.log(data.active);
 
   const onChecked = async () => {
     try {
@@ -68,13 +78,26 @@ export const CellAction = ({ data }: { data: ProjectColumn }) => {
       />
 
       <div className="flex items-center gap-4">
+        <Button disabled={loading} variant="ghost" size="icon">
+          <span className="sr-only">Images</span>
+          <ImagePlus className="h-5 w-5" />
+        </Button>
+        <Button disabled={loading} variant="ghost" size="icon">
+          <span className="sr-only">Features</span>
+          <Stars className="h-5 w-5" />
+        </Button>
         <Link href={`/projects/${data?.id}`}>
-          <Button variant="ghost" size="icon">
+          <Button disabled={loading} variant="ghost" size="icon">
             <span className="sr-only">Edit</span>
             <Edit className="h-5 w-5" />
           </Button>
         </Link>
-        <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
+        <Button
+          disabled={loading}
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsOpen(true)}
+        >
           <span className="sr-only">Delete</span>
           <Trash className="h-5 w-5  text-red-500" />
         </Button>
@@ -82,6 +105,7 @@ export const CellAction = ({ data }: { data: ProjectColumn }) => {
         <Switch
           checked={data?.active === 1 ? true : false}
           onCheckedChange={onChecked}
+          disabled={loading}
         />
       </div>
     </>

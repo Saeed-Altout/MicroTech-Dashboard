@@ -47,24 +47,21 @@ export const FormSelect = ({
 }: StoreSwitcherProps) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<number[]>([]);
-
   const formattedItems = items.map((item) => ({
     label: item.name,
     value: item.id,
   }));
-
+  const [selected, setSelected] = useState<number[]>([]);
   const handleSelect = (
     item: number,
     fieldChange: (value: number[]) => void
   ) => {
-    if (!selected.includes(item)) {
-      selected.push(item);
-    } else {
-      selected.pop();
-    }
-    fieldChange(selected);
-    router.refresh();
+    const isItemSelected = selected.includes(item);
+    const updatedSelected = isItemSelected
+      ? selected.filter((selectedItem) => selectedItem !== item)
+      : [...selected, item];
+    setSelected(updatedSelected);
+    fieldChange(updatedSelected);
   };
 
   useEffect(() => {
