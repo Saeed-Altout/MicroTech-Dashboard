@@ -33,8 +33,7 @@ export const CellAction = ({ data }: { data: TechnologyColumn }) => {
 
       router.refresh();
     } catch (error) {
-      //@ts-ignore
-      toast.error(error?.response?.data?.message);
+      toast.success("Something went wrong!");
     } finally {
       setLoading(false);
     }

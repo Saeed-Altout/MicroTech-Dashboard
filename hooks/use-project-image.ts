@@ -48,22 +48,3 @@ export const useProjectStore = create<ProjectStore>(
     },
   })
 );
-
-// // Usage in your component
-// const YourComponent = () => {
-//   const { files, setFiles, handleImage } = useProjectStore();
-
-//   // Example of using files state
-//   console.log('Cover Files:', files.cover);
-//   console.log('Logo Files:', files.logo);
-
-//   return (
-//     <div>
-//       {/* Your component code using the combined files state */}
-//       <input type="file" accept="image/*" onChange={(e) => handleImage(e, (value) => {}, 'cover')} />
-//       <input type="file" accept="image/*" onChange={(e) => handleImage(e, (value) => {}, 'logo')} />
-//     </div>
-//   );
-// };
-
-// export default YourComponent;

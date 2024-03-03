@@ -6,7 +6,7 @@ export default function useScrollTop(prevScroll = 10) {
 
   const handleScroll = () => {
     const scrollX = window.scrollX;
-    if (scrollX > prevScroll) {
+    if (scrollX >= prevScroll) {
       setIsScrolled(true);
     } else {
       setIsScrolled(false);

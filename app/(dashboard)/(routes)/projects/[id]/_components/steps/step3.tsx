@@ -6,35 +6,47 @@ import { useStep } from "@/hooks/use-step";
 import { Button } from "@/components/ui/button";
 
 import { FormSelect } from "@/components/form-select";
-
-const formSchema = z.object({
-  technologies: z.array(z.number().min(1)),
-  tools: z.array(z.number().min(1)),
-  work_types: z.array(z.number().min(1)),
-  platforms: z.array(z.number().min(1)),
-  members: z.array(z.number().min(1)),
-});
+import { useFormContext } from "react-hook-form";
 
 interface Step3Props {
-  form: any;
   constant: any;
 }
 
-export const Step3 = ({ form, constant }: Step3Props) => {
+export const Step3 = ({ constant }: Step3Props) => {
   const step = useStep();
+  const { getValues, setError, clearErrors } = useFormContext();
 
-  const moveNext = () => {
+  const moveNext = async () => {
     const values = {
-      technologies: form.getValues("technologies"),
-      tools: form.getValues("tools"),
-      work_types: form.getValues("work_types"),
-      platforms: form.getValues("platforms"),
-      members: form.getValues("members"),
+      technologies: getValues("technologies"),
+      tools: getValues("tools"),
+      work_types: getValues("work_types"),
+      platforms: getValues("platforms"),
+      members: getValues("members"),
     };
+    const formSchema = z.object({
+      technologies: z.array(z.number().min(1)),
+      tools: z.array(z.number().min(1)),
+      work_types: z.array(z.number().min(1)),
+      platforms: z.array(z.number().min(1)),
+      members: z.array(z.number().min(1)),
+    });
 
-    const validatedFields = formSchema.safeParse(values);
-    if (validatedFields.success) {
+    try {
+      await formSchema.parseAsync(values);
+      Object.keys(values).forEach((field) => {
+        clearErrors(field);
+      });
       step.increase();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          setError(err.path[0] as string, {
+            type: "manual",
+            message: err.message,
+          });
+        });
+      }
     }
   };
 
@@ -43,7 +55,6 @@ export const Step3 = ({ form, constant }: Step3Props) => {
       <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-start gap-6">
         <FormSelect
           items={constant.technologies}
-          form={form}
           name="technologies"
           heading="Technologies"
           href="/technologies"
@@ -51,7 +62,6 @@ export const Step3 = ({ form, constant }: Step3Props) => {
         />
         <FormSelect
           items={constant.toolsKit}
-          form={form}
           name="tools"
           heading="Tools-Kit"
           href="/tools"
@@ -59,7 +69,6 @@ export const Step3 = ({ form, constant }: Step3Props) => {
         />
         <FormSelect
           items={constant.members}
-          form={form}
           name="members"
           heading="Members"
           href="/members"
@@ -67,7 +76,6 @@ export const Step3 = ({ form, constant }: Step3Props) => {
         />
         <FormSelect
           items={constant.platforms}
-          form={form}
           name="platforms"
           heading="Platforms"
           href="/platforms"
@@ -75,7 +83,6 @@ export const Step3 = ({ form, constant }: Step3Props) => {
         />
         <FormSelect
           items={constant.workTypes}
-          form={form}
           name="work_types"
           heading="Work Types"
           href="/work_types"

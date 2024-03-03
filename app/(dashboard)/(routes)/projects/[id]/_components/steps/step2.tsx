@@ -2,7 +2,7 @@
 
 import * as z from "zod";
 import { Minus, Plus } from "lucide-react";
-import { useFieldArray } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -23,22 +23,10 @@ import { Separator } from "@/components/ui/separator";
 
 import { useStep } from "@/hooks/use-step";
 
-const formSchema = z.object({
-  advantages: z.array(z.string().min(1)),
-  links: z.array(
-    z.object({
-      link: z.string().min(1),
-      platform: z.string().min(1),
-    })
-  ),
-});
-
-interface Step2Props {
-  form: any;
-}
-
-export const Step2 = ({ form }: Step2Props) => {
+export const Step2 = () => {
   const step = useStep();
+  const { getValues, control, setError, clearErrors } = useFormContext();
+
   const platforms = ["Github", "Facebook", "Instgram", "Other"];
 
   const {
@@ -47,7 +35,7 @@ export const Step2 = ({ form }: Step2Props) => {
     remove: removeAdvantage,
   } = useFieldArray({
     name: "advantages",
-    control: form.control,
+    control: control,
   });
 
   const {
@@ -56,18 +44,39 @@ export const Step2 = ({ form }: Step2Props) => {
     remove: removeLink,
   } = useFieldArray({
     name: "links",
-    control: form.control,
+    control: control,
   });
 
-  const moveNext = () => {
+  const moveNext = async () => {
     const values = {
-      advantages: form.getValues("advantages"),
-      links: form.getValues("links"),
+      advantages: getValues("advantages"),
+      links: getValues("links"),
     };
+    const formSchema = z.object({
+      advantages: z.array(z.string().min(1)),
+      links: z.array(
+        z.object({
+          link: z.string().min(1),
+          platform: z.string().min(1),
+        })
+      ),
+    });
 
-    const validatedFields = formSchema.safeParse(values);
-    if (validatedFields.success) {
+    try {
+      await formSchema.parseAsync(values);
+      Object.keys(values).forEach((field) => {
+        clearErrors(field);
+      });
       step.increase();
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        error.errors.forEach((err) => {
+          setError(err.path[0] as string, {
+            type: "manual",
+            message: err.message,
+          });
+        });
+      }
     }
   };
 
@@ -100,7 +109,7 @@ export const Step2 = ({ form }: Step2Props) => {
           {advantagesFields.map((field, index) => (
             <FormField
               key={index}
-              control={form.control}
+              control={control}
               name={`advantages[${index}]`}
               render={({ field }) => (
                 <FormItem>
@@ -141,7 +150,7 @@ export const Step2 = ({ form }: Step2Props) => {
           {linksFields.map((field, index) => (
             <div key={index} className="flex gap-5">
               <FormField
-                control={form.control}
+                control={control}
                 name={`links.${index}.link`}
                 render={({ field }) => (
                   <FormItem className="w-36">
@@ -167,7 +176,7 @@ export const Step2 = ({ form }: Step2Props) => {
                 )}
               />
               <FormField
-                control={form.control}
+                control={control}
                 name={`links.${index}.platform`}
                 render={({ field }) => (
                   <FormItem className="flex-1">

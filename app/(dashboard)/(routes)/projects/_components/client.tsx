@@ -5,15 +5,8 @@ import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/ui/data-table";
-
-import { columns } from "./columns";
-import { useStateContext } from "@/providers/project-provider";
 
 export const Client = () => {
-  const { data } = useStateContext();
-
   return (
     <>
       <Heading title="Projects" description="Welcome in projects page.">
@@ -24,8 +17,6 @@ export const Client = () => {
           </Button>
         </Link>
       </Heading>
-      <Separator />
-      <DataTable columns={columns} data={data} searchKey="title" />
     </>
   );
 };

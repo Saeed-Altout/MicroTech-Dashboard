@@ -16,7 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useStep } from "@/hooks/use-step";
 import { ImagePlus } from "lucide-react";
 import Image from "next/image";
-import { useProjectStore } from "@/hooks/use-project-store";
+import { useProjectStore } from "@/hooks/use-project-image";
 import { useFormContext } from "react-hook-form";
 
 export const Step1 = () => {

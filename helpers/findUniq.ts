@@ -9,11 +9,13 @@ export async function findUniq({
 }) {
   try {
     const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/${entrypoint}/index?id=${id}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/${entrypoint}/index?id=${+id}`
     );
-    return res.data;
+    if (res.data.data === null) {
+      return null;
+    }
+    return res.data.data;
   } catch (error) {
     console.error(error);
-    return null;
   }
 }

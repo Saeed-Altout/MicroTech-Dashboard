@@ -4,7 +4,7 @@ import axios from "axios";
 import Image from "next/image";
 
 import { toast } from "sonner";
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { ImageIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -39,12 +39,33 @@ export const CreateModal: React.FC<CreateModalProps> = ({
   description,
   enterypoint,
 }) => {
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const createModal = useCreateModal();
   const router = useRouter();
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const { files, setFiles, handleImage } = useHandleImage();
+  const handleImage = (
+    e: ChangeEvent<HTMLInputElement>,
+    fieldChange: (value: string) => void
+  ) => {
+    e.preventDefault();
+    const fileReader = new FileReader();
 
-  const createModal = useCreateModal();
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFiles(Array.from(e.target.files));
+
+      if (!file.type.includes("image")) return;
+
+      fileReader.onload = async (event) => {
+        const imageDataUrl = event.target?.result?.toString() || "";
+        fieldChange(imageDataUrl);
+      };
+
+      fileReader.readAsDataURL(file);
+    }
+  };
 
   const form = useForm<z.infer<typeof itemSchema>>({
     resolver: zodResolver(itemSchema),
@@ -54,45 +75,37 @@ export const CreateModal: React.FC<CreateModalProps> = ({
     },
   });
 
-  const onCancel = () => {
+  const onClose = () => {
     createModal.onClose();
     setFiles([]);
-    form.reset({
-      name: "",
-      icon: "",
-    });
+    form.reset();
   };
 
   const onSubmit = async (values: z.infer<typeof itemSchema>) => {
-    let newFormData = new FormData();
-    await newFormData.append("icon", files[0]);
+    let data = new FormData();
+    data.append("icon", files[0]);
+    data.append("name", values.name);
 
     try {
       setLoading(true);
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/${enterypoint}/create`,
-        {
-          name: values.name,
-          icon: newFormData.get("icon"),
-        },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data", // Make sure to set the proper content type
-          },
-        }
-      );
-
+      await axios.post("http://127.0.0.1:8000/technology/create", data);
       toast.success("New item created!");
-      onCancel();
-
-      router.refresh();
+      onClose();
     } catch (error) {
-      //@ts-ignore
-      toast.error(error?.response?.data?.message);
+      toast.success("Something went wrong!");
+      console.log(error);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Modal
@@ -162,7 +175,7 @@ export const CreateModal: React.FC<CreateModalProps> = ({
             <Button
               type="button"
               variant="outline"
-              onClick={onCancel}
+              onClick={onClose}
               disabled={loading}
             >
               Cancel

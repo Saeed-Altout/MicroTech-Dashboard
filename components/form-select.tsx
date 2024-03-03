@@ -22,6 +22,7 @@ import { FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
+import { useFormContext } from "react-hook-form";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
@@ -29,17 +30,15 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 
 interface StoreSwitcherProps extends PopoverTriggerProps {
   items: Record<string, number>[];
-  form: any;
   name: string;
-  label: string;
-  heading: string;
+  label?: string;
+  heading?: string;
   href: string;
 }
 
 export const FormSelect = ({
   className,
   items = [],
-  form,
   name,
   heading,
   href,
@@ -47,6 +46,8 @@ export const FormSelect = ({
 }: StoreSwitcherProps) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { getValues, control } = useFormContext();
+
   const formattedItems = items.map((item) => ({
     label: item.name,
     value: item.id,
@@ -65,15 +66,15 @@ export const FormSelect = ({
   };
 
   useEffect(() => {
-    if (form.getValues(name) != "") {
-      setSelected(form.getValues(name));
+    if (getValues(name) != "") {
+      setSelected(getValues(name));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <FormField
-      control={form.control}
+      control={control}
       name={name}
       render={({ field }) => (
         <FormItem>
@@ -81,7 +82,6 @@ export const FormSelect = ({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                size="sm"
                 role="combobox"
                 aria-expanded={open}
                 aria-label="Select a item"
@@ -101,10 +101,10 @@ export const FormSelect = ({
                     {formattedItems.map((item) => (
                       <CommandItem
                         key={item.value}
+                        className="text-sm"
                         onSelect={() =>
                           handleSelect(+item.value, field.onChange)
                         }
-                        className="text-sm"
                       >
                         {selected?.map((current, index) => (
                           <span key={index}>

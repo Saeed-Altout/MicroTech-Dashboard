@@ -137,12 +137,6 @@ export const routes: RoutesProps[] = [
         pathname: "/home",
         icon: Home,
       },
-      {
-        label: "Add Project",
-        href: "/projects/new",
-        pathname: "/projects/new",
-        icon: Plus,
-      },
       // {
       //   label: "Settings",
       //   href: "/settings",

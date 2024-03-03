@@ -8,6 +8,6 @@ export async function findMany({ entrypoint }: { entrypoint: string }) {
     return res.data.data;
   } catch (error) {
     console.error(error);
-    throw new Error("Error fetching data"); // You may want to handle errors more gracefully
+    // throw new Error("Error fetching data");
   }
 }

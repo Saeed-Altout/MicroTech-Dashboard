@@ -9,7 +9,9 @@ export const projectSchema = z.object({
   about: z.string().min(1, { message: "About is required" }),
   description: z.string().min(1, { message: "Description is required" }),
   advantages: z.array(
-    z.string().min(1, { message: "Advantages must not be empty" })
+    z.object({
+      value: z.string().min(1, { message: "Advantages must not be empty" }),
+    })
   ),
   links: z.array(
     z.object({
@@ -31,8 +33,8 @@ export const projectSchema = z.object({
 });
 
 export const itemSchema = z.object({
-  name: z.string(),
-  icon: z.string(),
+  name: z.string().min(1),
+  icon: z.string().min(1),
 });
 export const memberSchema = z.object({
   name: z.string(),

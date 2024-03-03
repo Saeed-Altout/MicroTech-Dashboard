@@ -9,16 +9,17 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 import { useStep } from "@/hooks/use-step";
-import { useProjectStore } from "@/hooks/use-project-store";
+import { useProjectStore } from "@/hooks/use-project-image";
+import { useFormContext } from "react-hook-form";
 
 interface Step4Props {
-  form: any;
-  initialData: any;
+  initialData?: any;
 }
 
-export const Step4 = ({ form, initialData }: Step4Props) => {
+export const Step4 = ({ initialData }: Step4Props) => {
   const [loading, setLoading] = useState(false);
   const { files } = useProjectStore();
+  const { getValues } = useFormContext();
 
   const step = useStep();
   const router = useRouter();
@@ -30,7 +31,7 @@ export const Step4 = ({ form, initialData }: Step4Props) => {
     try {
       setLoading(true);
 
-      const values = await form.getValues();
+      const values = await getValues();
       let newFormData = new FormData();
 
       newFormData.append("cover", files.cover[0]);
