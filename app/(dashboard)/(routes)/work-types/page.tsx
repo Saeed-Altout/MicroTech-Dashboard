@@ -1,20 +1,29 @@
-import { columns } from "./_components/columns";
-import { Client } from "./_components/client";
+import { columns } from "./components/columns";
 
+import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
+import { CreateModal } from "@/components/modals/create-modal";
+import { ClientButton } from "@/components/common/client-button";
 
+import { getItems } from "@/data/item";
 import { WorkTypeColumn } from "@/config/config";
-import { findMany } from "@/helpers/findMany";
 
-export default async function WorkTypes() {
-  const data: WorkTypeColumn[] = await findMany({ entrypoint: "work_types" });
+export default async function WorkTypesPage() {
+  const data: WorkTypeColumn[] = await getItems("work_types");
 
   return (
-    <div className="space-y-6">
-      <Client />
+    <>
+      <CreateModal
+        title="Create Work_type"
+        description="Add New Work Types"
+        enterypoint="work_types"
+      />
+      <Heading title="Work Types" description="Welcome in work types page.">
+        <ClientButton />
+      </Heading>
       <Separator />
       <DataTable columns={columns} searchKey="name" data={data} />
-    </div>
+    </>
   );
 }

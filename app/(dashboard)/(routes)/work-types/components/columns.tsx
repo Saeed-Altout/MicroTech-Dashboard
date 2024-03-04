@@ -4,7 +4,7 @@ import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { WorkTypeColumn } from "@/config/config";
-import { CellAction } from "./cell-action";
+import { CellAction } from "@/components/common/cell-action";
 
 export const columns: ColumnDef<WorkTypeColumn>[] = [
   {
@@ -33,6 +33,9 @@ export const columns: ColumnDef<WorkTypeColumn>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    header: "Actions",
+    cell: ({ row }) => (
+      <CellAction data={row.original} enterypoint="work_types" />
+    ),
   },
 ];
