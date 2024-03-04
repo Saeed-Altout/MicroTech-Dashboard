@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import { FormSelect } from "@/components/common/form-select";
 import { Heading } from "./heading";
 import { projectSchema } from "@/schemas";
+import { Spinner } from "@/components/ui/spinner";
 
 interface FormProjectProps {
   initialData?: any;
@@ -489,8 +490,19 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
               href="/work_types"
               label="Create Work Type"
             />
-            <div className="pt-20">
-              <Button type="submit">Create project</Button>
+            <div className="flex items-center gap-4 w-full pt-20">
+              <Button
+                disabled={loading}
+                variant="outline"
+                type="button"
+                onClick={onCancel}
+              >
+                Cancel
+              </Button>
+              <Button disabled={loading} type="submit">
+                {initialData ? "Save Changes" : "Create Project"}
+                {loading && <Spinner className="ml-2 text-white" />}
+              </Button>
             </div>
           </div>
         </form>
