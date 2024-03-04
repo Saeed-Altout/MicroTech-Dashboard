@@ -4,7 +4,7 @@ import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
 
 import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 import "./globals.css";
 

@@ -2,11 +2,10 @@
 
 import axios from "axios";
 import Image from "next/image";
-
 import { toast } from "sonner";
-import { useState } from "react";
-import { ImageIcon } from "lucide-react";
+import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ChangeEvent, useEffect, useState } from "react";
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -26,7 +25,6 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 import { itemSchema } from "@/schemas";
-import { useHandleImage } from "@/hooks/use-handle-image";
 interface EditModalProps {
   title: string;
   description: string;
@@ -44,10 +42,11 @@ export const EditModal = ({
   entrypoint,
   data,
 }: EditModalProps) => {
-  const router = useRouter();
-
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const { files, setFiles, handleImage } = useHandleImage();
+  const [files, setFiles] = useState<File[]>([]);
+
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof itemSchema>>({
     resolver: zodResolver(itemSchema),
@@ -57,42 +56,65 @@ export const EditModal = ({
     },
   });
 
+  const handleImage = (
+    e: ChangeEvent<HTMLInputElement>,
+    fieldChange: (value: string) => void
+  ) => {
+    e.preventDefault();
+    const fileReader = new FileReader();
+
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFiles(Array.from(e.target.files));
+
+      if (!file.type.includes("image")) return;
+
+      fileReader.onload = async (event) => {
+        const imageDataUrl = event.target?.result?.toString() || "";
+        fieldChange(imageDataUrl);
+      };
+
+      fileReader.readAsDataURL(file);
+    }
+  };
+
   const onCancel = () => {
     setFiles([]);
+    form.reset();
     onClose();
   };
 
   const onSubmit = async (values: z.infer<typeof itemSchema>) => {
-    let newFormData = new FormData();
+    let newData = new FormData();
 
-    if (files[0] !== undefined) {
-      newFormData.append("id", data?.id.toString());
-      newFormData.append("name", values.name);
-      newFormData.append("icon", files[0]);
-    } else {
-      newFormData.append("id", data?.id.toString());
-      newFormData.append("name", values.name);
-    }
+    newData.append("id", data?.id.toString());
+    newData.append("name", values.name);
+    files[0] !== undefined && newData.append("icon", files[0]);
 
     try {
       setLoading(true);
       await axios.post(
         `${process.env.NEXT_PUBLIC_BASE_URL}/${entrypoint}/edit`,
-        newFormData
+        newData
       );
-
       toast.success(`${data?.name} edited!`);
-      onCancel();
 
+      onCancel();
       router.refresh();
     } catch (error) {
-      //@ts-ignore
-      toast.error(error?.response?.data?.message);
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
   return (
     <Modal
       title={title}
@@ -124,7 +146,7 @@ export const EditModal = ({
               <FormItem className="relative">
                 <FormLabel className="cursor-pointer h-[250px] w-full border-dashed border rounded-md flex justify-center items-center">
                   {field.value ? (
-                    <div className="h-20 w-20">
+                    <div className="h-20 w-20 overflow-hidden">
                       <Image
                         src={field.value}
                         alt="Icon"
@@ -139,7 +161,7 @@ export const EditModal = ({
                       />
                     </div>
                   ) : (
-                    <ImageIcon
+                    <ImagePlus
                       strokeWidth={0.5}
                       className="w-20 h-20 text-muted-foreground"
                     />
@@ -158,7 +180,7 @@ export const EditModal = ({
               </FormItem>
             )}
           />
-          <div className="pt-6 flex gap-4 items-center justify-end w-full">
+          <div className="pt-6 flex items-center justify-end gap-4 w-full">
             <Button
               type="button"
               variant="outline"
@@ -168,7 +190,7 @@ export const EditModal = ({
               Cancel
             </Button>
             <Button disabled={loading} type="submit">
-              Save {loading && <Spinner className="ml-2 text-white" />}
+              Save Changes {loading && <Spinner className="ml-2 text-white" />}
             </Button>
           </div>
         </form>
