@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 interface ItemProps {
   label: string;
   href: string;
-  pathname: string | any;
   icon: LucideIcon;
   onClick?: () => void;
 }
@@ -17,7 +16,6 @@ interface ItemProps {
 export const Item: React.FC<ItemProps> = ({
   label,
   href,
-  pathname,
   icon: Icon,
   onClick,
 }) => {
@@ -25,7 +23,7 @@ export const Item: React.FC<ItemProps> = ({
   return (
     <Link href={href} className="w-full" onClick={onClick}>
       <Button
-        variant={currentPathname === pathname ? "default" : "ghost"}
+        variant={currentPathname.includes(href) ? "default" : "ghost"}
         className="flex justify-start items-center gap-3 w-full text-sm font-medium"
       >
         <Icon className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />

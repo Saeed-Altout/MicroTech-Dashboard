@@ -1,7 +1,7 @@
 "use client";
 
 import { Key, useState } from "react";
-import { Menu, Plus } from "lucide-react";
+import { LogOut, Menu, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +15,7 @@ import { Item } from "./item";
 import { LinksProps, RoutesProps, routes } from "@/config/config";
 
 import { useCreateProjectModal } from "@/hooks/use-create-project-modal";
+import { usePathname } from "next/navigation";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -44,16 +45,12 @@ export const Sidebar = () => {
                 <h3 className="font-semibold text-lg mb-3 w-full">{title}</h3>
                 <div className="w-full flex flex-col gap-3">
                   {links.map(
-                    (
-                      { label, href, icon: Icon, pathname }: LinksProps,
-                      index: Key
-                    ) => (
+                    ({ label, href, icon: Icon }: LinksProps, index: Key) => (
                       <Item
                         key={index}
                         label={label}
                         href={href}
                         icon={Icon}
-                        pathname={pathname}
                         onClick={() => setIsOpen(false)}
                       />
                     )
@@ -63,12 +60,19 @@ export const Sidebar = () => {
             ))}
             <Separator />
             <Button
-              variant="secondary"
+              variant="ghost"
               className="flex justify-start items-center gap-3 w-full text-sm font-medium"
               onClick={() => createProjectModal.onOpen()}
             >
               <Plus className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
               Add Project
+            </Button>
+            <Button
+              variant="ghost"
+              className="flex justify-start items-center gap-3 w-full text-sm font-medium"
+            >
+              <LogOut className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
+              Logout
             </Button>
           </div>
         </ScrollArea>
@@ -98,7 +102,6 @@ export const Sidebar = () => {
                             label={label}
                             href={href}
                             icon={Icon}
-                            pathname={pathname}
                             onClick={() => setIsOpen(false)}
                           />
                         )
@@ -108,12 +111,19 @@ export const Sidebar = () => {
                 ))}
                 <Separator />
                 <Button
-                  variant="secondary"
+                  variant="ghost"
                   className="flex justify-start items-center gap-3 w-full text-sm font-medium"
                   onClick={() => createProjectModal.onOpen()}
                 >
                   <Plus className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
                   Add Project
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex justify-start items-center gap-3 w-full text-sm font-medium"
+                >
+                  <LogOut className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
+                  Logout
                 </Button>
               </div>
             </ScrollArea>
