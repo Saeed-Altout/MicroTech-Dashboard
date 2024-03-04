@@ -11,7 +11,7 @@ interface HeadingProps {
 export const Heading = ({ label, onRemove, onAppend }: HeadingProps) => {
   return (
     <div className="flex justify-between items-center">
-      <FormLabel className="text-lg">{label}</FormLabel>
+      <FormLabel className="text-lg whitespace-nowrap">{label}</FormLabel>
       <div className="w-full flex justify-end gap-5">
         <Button type="button" variant="outline" size="icon" onClick={onRemove}>
           <Minus className="h-4 w-4" />

@@ -90,6 +90,7 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
     fieldChange: (value: string) => void
   ) => {
     e.preventDefault();
+    e.stopPropagation();
     const fileReader = new FileReader();
 
     if (e.target.files && e.target.files.length > 0) {

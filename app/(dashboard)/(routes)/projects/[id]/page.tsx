@@ -23,3 +23,14 @@ export default async function NewProject({
     </>
   );
 }
+
+// Notes
+// const addImageField = () => {
+//   form.setValue("advantages", [...form.getValues("advantages"), ""]);
+// };
+
+// const removeImagesField = (index: number) => {
+//   const updatedImages = [...form.getValues("advantages")];
+//   updatedImages.splice(index, 1);
+//   form.setValue("advantages", updatedImages);
+// };

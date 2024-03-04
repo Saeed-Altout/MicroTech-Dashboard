@@ -1,82 +1,142 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import axios from "axios";
+import Image from "next/image";
+import { toast } from "sonner";
+import { ImagePlus } from "lucide-react";
+import { ChangeEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import * as z from "zod";
+import { useFieldArray, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ChangeEvent, useState } from "react";
-import { ImagePlus } from "lucide-react";
-import Image from "next/image";
-import axios from "axios";
+import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
+
+import { ProjectColumn } from "@/config/config";
+import { Heading } from "../../components/heading";
 
 const formSchema = z.object({
-  imgUrl: z.array(z.string()),
+  images: z.array(
+    z.object({
+      imgUrl: z.string(),
+    })
+  ),
 });
 
-export const FormProjectImages = ({ initialData }: { initialData: any }) => {
-  const [files, setFiles] = useState<string[]>([]);
-  const [filesUpload, setFilesUpload] = useState<File[]>([]);
+export const FormProjectImages = ({
+  initialData,
+}: {
+  initialData: ProjectColumn;
+}) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [imagesToUpload, setImagesToUpload] = useState<
+    {
+      id: any;
+      file: File;
+    }[]
+  >([]);
+  const router = useRouter();
+
+  let imagesInitalValue: {
+    imgUrl: string;
+  }[] = [];
+
+  initialData?.images.forEach((image: any | undefined) =>
+    imagesInitalValue.push({
+      imgUrl: image.image_url as string,
+    })
+  );
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      imgUrl: initialData?.images?.map((img: any) => img?.image_url) || [],
+      images: imagesInitalValue || [],
     },
   });
 
-  const handleImage = async (
+  const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
-    fieldChange: (value: string[]) => void
+    fieldChange: (value: string) => void,
+    index: any
   ) => {
     e.preventDefault();
+    e.stopPropagation();
     const fileReader = new FileReader();
-    const newFiles: string[] = [];
+
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
+      setImagesToUpload([
+        ...imagesToUpload,
+        {
+          id: index,
+          file: Array.from(e.target.files)[0],
+        },
+      ]);
+      setFiles([...files]);
+
       if (!file.type.includes("image")) return;
-      filesUpload.push(file);
-      fileReader.onload = () => {
-        const imageDataUrl = fileReader.result?.toString() || "";
-        newFiles.push(imageDataUrl);
-        setFiles([...files, ...newFiles]);
-        fieldChange([...files, ...newFiles]);
+
+      fileReader.onload = async (event) => {
+        const imageDataUrl = event.target?.result?.toString() || "";
+        fieldChange(imageDataUrl);
       };
+
       fileReader.readAsDataURL(file);
     }
   };
-  const [loading, setLoading] = useState(false);
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    const newFormData = new FormData();
+  const { fields, append, remove } = useFieldArray({
+    name: "images",
+    control: form.control,
+  });
 
-    filesUpload.forEach((file, index) =>
-      newFormData.append(`images[${index}]`, file)
-    );
-    newFormData.append("project_id", initialData?.id);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const newData = new FormData();
+
+    newData.append("project_id", initialData?.id.toString());
 
     try {
       setLoading(true);
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/project/add_images`,
-        newFormData
-      );
+      if (initialData.images.length > 0) {
+        imagesToUpload.forEach((image, index) => {
+          newData.append(
+            `images[${index}]`,
+            initialData.images[index].id.toString()
+          );
+          newData.append(`images[${index}]`, image.file);
+        });
+
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/project/edit_images`,
+          newData
+        );
+        toast.success("Images Edited!");
+      } else {
+        imagesToUpload.forEach((image, index) => {
+          newData.append(`images[${index}]`, image.file);
+        });
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/project/add_images`,
+          newData
+        );
+        toast.success("Images Uploaded!");
+      }
+
       setFiles([]);
-      setFilesUpload([]);
-      toast.success("Images Uploaded");
+      router.refresh();
+      router.push("/projects");
     } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong");
-      throw new Error("Error added images");
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -86,52 +146,69 @@ export const FormProjectImages = ({ initialData }: { initialData: any }) => {
     <>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="imgUrl"
-            render={({ field }) => (
-              <FormItem className="relative h-[150px]">
-                <FormLabel className="cursor-pointer flex justify-center items-center gap-3 border-dashed border rounded-md h-full">
-                  <ImagePlus
-                    strokeWidth={0.5}
-                    className="w-5 h-5 text-muted-foreground"
-                  />
-                  <p className="text-muted-foreground">Upload Image</p>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleImage(e, field.onChange)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex justify-end items-center">
+          <div className="space-y-6">
+            <Heading
+              label="Images:"
+              onRemove={() => remove(fields.length - 1)}
+              onAppend={() => append({ imgUrl: "" })}
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {fields.map((field, index) => (
+                <FormField
+                  key={index}
+                  control={form.control}
+                  name={`images.${index}.imgUrl`}
+                  render={({ field }) => (
+                    <FormItem className="relative">
+                      <FormLabel className="cursor-pointer h-[250px] w-full border-dashed border rounded-md flex justify-center items-center">
+                        {field.value ? (
+                          <div className="h-full w-full overflow-hidden">
+                            <Image
+                              src={field.value}
+                              alt="Icon"
+                              width={1000}
+                              height={1000}
+                              loading="eager"
+                              className="object-cover"
+                              style={{ width: "100%", height: "auto" }}
+                              onError={(e: any) => {
+                                e.target.src = "./logo-icon.svg";
+                              }}
+                            />
+                          </div>
+                        ) : (
+                          <ImagePlus
+                            strokeWidth={0.5}
+                            className="w-20 h-20 text-muted-foreground"
+                          />
+                        )}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          className="w-full h-[250px] hidden"
+                          type="file"
+                          accept="image/*"
+                          placeholder="Upload a photo"
+                          onChange={(e) =>
+                            handleImage(e, field.onChange, index)
+                          }
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="flex pt-20">
             <Button type="submit">
-              Upload
+              {initialData.images.length > 0 ? "Save Changes" : "Upload Images"}
               {loading && <Spinner className="text-white ml-2" />}
             </Button>
           </div>
         </form>
       </Form>
-      {files.length > 0 && (
-        <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10">
-          {files.map((imageUrl, index) => (
-            <Image
-              key={index}
-              width={300}
-              height={300}
-              src={imageUrl}
-              alt={`Image ${index + 1}`}
-              className="object-cover w-full"
-            />
-          ))}
-        </div>
-      )}
     </>
   );
 };
