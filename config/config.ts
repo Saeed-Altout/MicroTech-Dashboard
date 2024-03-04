@@ -133,8 +133,8 @@ export const routes: RoutesProps[] = [
     links: [
       {
         label: "Home",
-        href: "/home",
-        pathname: "/home",
+        href: "/",
+        pathname: "/",
         icon: Home,
       },
       // {
