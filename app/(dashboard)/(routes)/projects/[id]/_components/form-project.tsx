@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { projectSchema } from "@/schemas";
 
 import { useProjectStore } from "@/hooks/use-project-image";
-import { FormSelect } from "@/components/form-select";
+import { FormSelect } from "@/components/common/form-select";
 
 interface FormProjectProps {
   initialData?: any;

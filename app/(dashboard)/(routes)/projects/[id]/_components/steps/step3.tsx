@@ -5,7 +5,7 @@ import * as z from "zod";
 import { useStep } from "@/hooks/use-step";
 import { Button } from "@/components/ui/button";
 
-import { FormSelect } from "@/components/form-select";
+import { FormSelect } from "@/components/common/form-select";
 import { useFormContext } from "react-hook-form";
 
 interface Step3Props {

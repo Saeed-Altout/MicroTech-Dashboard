@@ -183,7 +183,7 @@ export const CreateModal: React.FC<CreateModalProps> = ({
               Cancel
             </Button>
             <Button disabled={loading} type="submit">
-              Save {loading && <Spinner className="ml-2 text-white" />}
+              Create {loading && <Spinner className="ml-2 text-white" />}
             </Button>
           </div>
         </form>
