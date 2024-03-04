@@ -30,29 +30,10 @@ import { Spinner } from "@/components/ui/spinner";
 
 export const CellAction = ({ data }: { data: MemberColumn }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [isDelete, setIsDelete] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
-
-  const onConfirm = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/member/delete?id=${data?.id}`
-      );
-
-      toast.success(`${data?.name} deleted!`);
-      setIsDelete(false);
-
-      router.refresh();
-    } catch (error) {
-      //@ts-ignore
-      toast.error(error?.response?.data?.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const form = useForm<z.infer<typeof memberSchema>>({
     resolver: zodResolver(memberSchema),
@@ -63,7 +44,25 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
     },
   });
 
+  const onConfirm = async () => {
+    try {
+      setLoading(true);
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/member/delete?id=${data?.id}`
+      );
+      toast.success(`${data?.name} deleted!`);
+
+      setIsDelete(false);
+      router.refresh();
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const onCancel = () => {
+    form.reset();
     setIsEdit(false);
   };
 
@@ -82,8 +81,7 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
       onCancel();
       router.refresh();
     } catch (error) {
-      //@ts-ignore
-      toast.error(error?.response?.data?.message);
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -94,15 +92,15 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
       <AlertModal
         isOpen={isDelete}
         loading={loading}
-        onClose={() => setIsDelete(false)}
         onConfirm={onConfirm}
+        onClose={() => setIsDelete(false)}
       />
       <Modal
         title="Edit Member"
         description="edit a member"
         isOpen={isEdit}
-        onClose={() => setIsEdit(false)}
         loading={loading}
+        onClose={() => setIsEdit(false)}
       >
         <div className="space-y-4 py-2 pb-4">
           <div className="space-y-2">
@@ -164,7 +162,7 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
                   )}
                 />
 
-                <div className="pt-6 space-x-2 flex items-center justify-end w-full">
+                <div className="pt-6 flex items-center justify-end gap-4 w-full">
                   <Button
                     disabled={loading}
                     variant="outline"
@@ -174,7 +172,8 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
                     Cancel
                   </Button>
                   <Button disabled={loading} type="submit">
-                    Save {loading && <Spinner className="ml-2 text-white" />}
+                    Save Changes
+                    {loading && <Spinner className="ml-2 text-white" />}
                   </Button>
                 </div>
               </form>
@@ -183,7 +182,7 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
         </div>
       </Modal>
 
-      <div className="flex datas-center justify-center gap-5">
+      <div className="flex items-center justify-center gap-5">
         <Button variant="ghost" size="icon" onClick={() => setIsEdit(true)}>
           <span className="sr-only">Edit</span>
           <Edit className="h-5 w-5" />
