@@ -15,7 +15,11 @@ export default function DashboardLayout({
         <Navbar />
         <div className="flex flex-wrap flex-1 grow transition-all h-[calc(100vh-64px)]">
           <ScrollArea className="w-full h-full">
-            <div className="space-y-5 px-4 py-6 relative">{children}</div>
+            <div className="px-4 py-6 relative">
+              <div className="w-[calc(100vw-32px)] md:w-[calc(100vw-272px)] space-y-6">
+                {children}
+              </div>
+            </div>
           </ScrollArea>
         </div>
       </div>

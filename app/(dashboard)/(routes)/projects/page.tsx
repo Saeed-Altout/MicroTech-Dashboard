@@ -16,7 +16,7 @@ export default async function ProjectsPage() {
   const projects: ProjectColumn[] = data.data;
 
   return (
-    <div className="w-[calc(100vw-32px)] md:w-[calc(100vw-272px)] space-y-6">
+    <>
       <Heading title="Projects" description="Welcome in projects page.">
         <Link href="/projects/new">
           <Button>
@@ -27,6 +27,6 @@ export default async function ProjectsPage() {
       </Heading>
       <Separator />
       <DataTable columns={columns} data={projects} searchKey="title" />
-    </div>
+    </>
   );
 }
