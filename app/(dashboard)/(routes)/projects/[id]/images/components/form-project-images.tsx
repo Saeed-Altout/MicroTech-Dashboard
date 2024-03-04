@@ -143,11 +143,11 @@ export const FormProjectImages = ({
   };
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <div className="flex flex-col gap-y-6 max-w-7xl mx-auto">
           <div className="space-y-6">
-            {!initialData.images && (
+            {initialData.images.length <= 0 && (
               <Heading
                 label="Images:"
                 onRemove={() => remove(fields.length - 1)}
@@ -209,8 +209,8 @@ export const FormProjectImages = ({
               {loading && <Spinner className="text-white ml-2" />}
             </Button>
           </div>
-        </form>
-      </Form>
-    </>
+        </div>
+      </form>
+    </Form>
   );
 };
