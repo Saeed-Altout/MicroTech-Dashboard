@@ -16,7 +16,7 @@ export default async function Technologies() {
     <>
       <CreateModal
         title="Create Technology"
-        description="Add a new technology"
+        description="Add New technology"
         enterypoint="technology"
       />
       <Heading title="Technologies" description="Welcome in technologies page.">
