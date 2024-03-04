@@ -6,13 +6,12 @@ import {
   LayoutDashboard,
   LogOut,
   LucideIcon,
-  Plus,
   Settings,
   Tag,
   Users,
 } from "lucide-react";
 
-interface Item {
+export interface Item {
   id: number | string;
   name: string;
   number_project: number | string;

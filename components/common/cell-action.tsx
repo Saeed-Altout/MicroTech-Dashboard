@@ -1,20 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-
 import axios from "axios";
 import { toast } from "sonner";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Trash, Edit } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
 import { AlertModal } from "@/components/modals/alert-modal";
 import { EditModal } from "@/components/modals/edit-modal";
 
-import { TechnologyColumn } from "@/config/config";
+import { Item } from "@/config/config";
 
-export const CellAction = ({ data }: { data: TechnologyColumn }) => {
+export const CellAction = ({
+  data,
+  enterypoint,
+}: {
+  data: Item;
+  enterypoint: string;
+}) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -25,15 +29,14 @@ export const CellAction = ({ data }: { data: TechnologyColumn }) => {
     try {
       setLoading(true);
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/technology/delete?id=${data?.id}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/${enterypoint}/delete?id=${data?.id}`
       );
-
       toast.success(`${data?.name} deleted!`);
-      setIsDelete(false);
 
+      setIsDelete(false);
       router.refresh();
     } catch (error) {
-      toast.success("Something went wrong!");
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -49,9 +52,9 @@ export const CellAction = ({ data }: { data: TechnologyColumn }) => {
       />
 
       <EditModal
-        title="Edit Technology"
-        description="you can edit technology."
-        entrypoint="technology"
+        title={`Edit ${enterypoint}`}
+        description={`you can edit ${enterypoint}.`}
+        entrypoint={enterypoint}
         data={data}
         isOpen={isEdit}
         onClose={() => setIsEdit(false)}

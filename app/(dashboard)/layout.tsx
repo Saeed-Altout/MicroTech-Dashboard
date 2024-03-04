@@ -1,5 +1,5 @@
-import { Sidebar } from "./_components/sidebar";
-import { Navbar } from "./_components/navbar";
+import { Sidebar } from "./components/sidebar";
+import { Navbar } from "./components/navbar";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 

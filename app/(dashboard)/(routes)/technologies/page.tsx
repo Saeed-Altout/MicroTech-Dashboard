@@ -1,20 +1,29 @@
-import { columns } from "./_components/columns";
-import { Client } from "./_components/client";
+import { columns } from "./components/columns";
 
+import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
+import { CreateModal } from "@/components/modals/create-modal";
+import { ClientButton } from "@/components/common/client-button";
 
+import { getItems } from "@/data/item";
 import { TechnologyColumn } from "@/config/config";
-import { findMany } from "@/helpers/findMany";
 
 export default async function Technologies() {
-  const data: TechnologyColumn[] = await findMany({ entrypoint: "technology" });
+  const data: TechnologyColumn[] = await getItems("technology");
 
   return (
-    <div className="space-y-6">
-      <Client />
+    <>
+      <CreateModal
+        title="Create Technology"
+        description="Add a new technology"
+        enterypoint="technology"
+      />
+      <Heading title="Technologies" description="Welcome in technologies page.">
+        <ClientButton />
+      </Heading>
       <Separator />
       <DataTable columns={columns} searchKey="name" data={data} />
-    </div>
+    </>
   );
 }
