@@ -147,11 +147,13 @@ export const FormProjectImages = ({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-6">
-            <Heading
-              label="Images:"
-              onRemove={() => remove(fields.length - 1)}
-              onAppend={() => append({ imgUrl: "" })}
-            />
+            {!initialData.images && (
+              <Heading
+                label="Images:"
+                onRemove={() => remove(fields.length - 1)}
+                onAppend={() => append({ imgUrl: "" })}
+              />
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {fields.map((field, index) => (
