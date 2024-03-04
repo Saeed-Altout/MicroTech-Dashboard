@@ -7,6 +7,11 @@ export const LoginSchema = z.object({
     message: "Password is requierd 🔑",
   }),
 });
+export const projectFastSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  cover: z.string(),
+});
 export const projectSchema = z.object({
   cover: z.string().min(1, { message: "Cover is required" }),
   logo: z.string().min(1, { message: "Logo is required" }),

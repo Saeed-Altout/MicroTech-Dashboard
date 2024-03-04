@@ -1,5 +1,6 @@
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { Stars, Users, ArrowRight, Circle, CircleDashed } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -8,13 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Stars, Users, ArrowLeftRight, ArrowRight } from "lucide-react";
-import { formatter } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Heading } from "@/components/ui/heading";
+import { Separator } from "@/components/ui/separator";
+
 import { getItems } from "@/data/item";
 import { getProjects } from "@/data/project";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { Overview } from "@/components/common/overview";
+
 export default async function HomePage() {
   const projects = await getProjects();
   const members = await getItems("member");
@@ -70,7 +71,13 @@ export default async function HomePage() {
           </CardFooter>
         </Card>
       </div>
-      <div>here will found best projects</div>
+      <div className="h-96 w-full flex justify-center items-center flex-col gap-5">
+        <p className="text-xl">
+          Here will found best projects{" "}
+          <span className="font-semibold animate-pulse">Soon</span>
+        </p>
+        <CircleDashed className="animate-spin h-10 w-10" />
+      </div>
     </>
   );
 }
