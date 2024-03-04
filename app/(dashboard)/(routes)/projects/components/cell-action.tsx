@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import axios from "axios";
-
 import { toast } from "sonner";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash, Edit, ImagePlus, Stars } from "lucide-react";
+import { Trash, Edit, ImagePlus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -15,10 +14,9 @@ import { AlertModal } from "@/components/modals/alert-modal";
 import { ProjectColumn } from "@/config/config";
 
 export const CellAction = ({ data }: { data: ProjectColumn }) => {
-  const router = useRouter();
-
   const [loading, setLoading] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const router = useRouter();
 
   const onConfirm = async () => {
     try {
@@ -29,11 +27,9 @@ export const CellAction = ({ data }: { data: ProjectColumn }) => {
 
       toast.success(`${data?.title} deleted!`);
       setIsOpen(false);
-
       router.refresh();
     } catch (error) {
-      //@ts-ignore
-      toast.error(error?.response?.data?.message);
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -51,8 +47,7 @@ export const CellAction = ({ data }: { data: ProjectColumn }) => {
 
       router.refresh();
     } catch (error) {
-      //@ts-ignore
-      toast.error(error?.response?.data?.message);
+      toast.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -68,30 +63,18 @@ export const CellAction = ({ data }: { data: ProjectColumn }) => {
       />
 
       <div className="flex items-center gap-4">
-        <Button
-          onClick={() => router.push(`/projects/${data?.id}/images`)}
-          disabled={loading}
-          variant="ghost"
-          size="icon"
-        >
-          <span className="sr-only">Images</span>
-          <ImagePlus className="h-5 w-5" />
+        <Button disabled={loading} variant="ghost" size="icon" asChild>
+          <Link href={`/projects/${data?.id}/images`}>
+            <span className="sr-only">Images</span>
+            <ImagePlus className="h-5 w-5" />
+          </Link>
         </Button>
-        <Button
-          onClick={() => router.push(`/projects/${data?.id}/features`)}
-          disabled={loading}
-          variant="ghost"
-          size="icon"
-        >
-          <span className="sr-only">Features</span>
-          <Stars className="h-5 w-5" />
-        </Button>
-        <Link href={`/projects/${data?.id}`}>
-          <Button disabled={loading} variant="ghost" size="icon">
+        <Button disabled={loading} variant="ghost" size="icon" asChild>
+          <Link href={`/projects/${data?.id}`}>
             <span className="sr-only">Edit</span>
             <Edit className="h-5 w-5" />
-          </Button>
-        </Link>
+          </Link>
+        </Button>
         <Button
           disabled={loading}
           variant="ghost"

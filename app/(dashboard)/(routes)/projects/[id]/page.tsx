@@ -1,30 +1,25 @@
-import axios from "axios";
-
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 
-import { FormProject } from "./_components/form-project";
+import { FormProject } from "./components/form-project";
+import { getConstData, getProjectById } from "@/data/project";
 
-import { findUniq } from "@/helpers/findUniq";
+export default async function NewProject({
+  params,
+}: {
+  params: { id: string };
+}) {
+  const constData = await getConstData();
+  const initialData = await getProjectById(params.id);
 
-export default async function NewProject({ params }: { params: { id: any } }) {
-  const constant = await axios
-    .get(`${process.env.NEXT_PUBLIC_BASE_URL}/project/get_groups`)
-    .then((res) => res.data.data);
-
-  const initialData = await findUniq({
-    id: params.id,
-    entrypoint: "project",
-  });
-
-  const title = initialData ? "Edit project" : "Create project";
-  const description = initialData ? "Edit your project" : "Add a new Project.";
+  const title = initialData ? "Edit project" : "Create Project";
+  const description = initialData ? "Edit your project" : "Add New Project.";
 
   return (
-    <div className="space-y-6">
+    <>
       <Heading title={title} description={description} />
       <Separator />
-      <FormProject initialData={initialData} constant={constant} />
-    </div>
+      <FormProject initialData={initialData} constant={constData} />
+    </>
   );
 }

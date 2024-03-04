@@ -2,7 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Check, ChevronRight, ChevronsUpDown, PlusCircle } from "lucide-react";
+import {
+  Check,
+  ChevronDown,
+  ChevronRight,
+  ChevronsDown,
+  ChevronsUpDown,
+  PlusCircle,
+} from "lucide-react";
 
 import {
   Command,
@@ -44,15 +51,16 @@ export const FormSelect = ({
   href,
   label,
 }: StoreSwitcherProps) => {
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<number[]>([]);
+  const [open, setOpen] = useState<boolean>(false);
   const { getValues, control } = useFormContext();
+  const router = useRouter();
 
   const formattedItems = items.map((item) => ({
     label: item.name,
     value: item.id,
   }));
-  const [selected, setSelected] = useState<number[]>([]);
+
   const handleSelect = (
     item: number,
     fieldChange: (value: number[]) => void
@@ -69,8 +77,7 @@ export const FormSelect = ({
     if (getValues(name) != "") {
       setSelected(getValues(name));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getValues, name]);
 
   return (
     <FormField
@@ -87,9 +94,8 @@ export const FormSelect = ({
                 aria-label="Select a item"
                 className={cn("w-full justify-between", className)}
               >
-                <ChevronRight className="mr-2 h-4 w-4" />
                 Select {heading}
-                <ChevronsUpDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                <ChevronDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="col-span-1 w-full p-0">
