@@ -9,8 +9,8 @@ const MarketingPage = async () => {
   const cookiesList = cookies();
   const hasToken = cookiesList.has("token");
 
-  if (!hasToken) {
-    redirect("/auth/login");
+  if (hasToken) {
+    redirect("/home");
   }
 
   return (

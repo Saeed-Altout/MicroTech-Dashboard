@@ -5,7 +5,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState, useTransition } from "react";
 
 import * as z from "zod";
 import { useForm } from "react-hook-form";
@@ -26,6 +26,7 @@ import { Spinner } from "@/components/ui/spinner";
 
 import { itemSchema } from "@/schemas";
 import { useCreateModal } from "@/hooks/use-create-modal";
+import { createItem } from "@/actions/create";
 interface CreateModalProps {
   title: string;
   description: string;
@@ -38,10 +39,10 @@ export const CreateModal: React.FC<CreateModalProps> = ({
   enterypoint,
 }) => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
   const createModal = useCreateModal();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof itemSchema>>({
     resolver: zodResolver(itemSchema),
@@ -85,20 +86,18 @@ export const CreateModal: React.FC<CreateModalProps> = ({
     data.append("icon", files[0]);
     data.append("name", values.name);
 
-    try {
-      setLoading(true);
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/${enterypoint}/create`,
-        data
-      );
-      toast.success("New item created!");
-      onCancel();
-      router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
+    startTransition(() => {
+      createItem(values, enterypoint, data).then((data) => {
+        if (data?.error) {
+          toast.error(data.error);
+        }
+        if (data?.success) {
+          toast.success(data.success);
+          router.refresh();
+          onCancel();
+        }
+      });
+    });
   };
 
   useEffect(() => {
@@ -112,7 +111,7 @@ export const CreateModal: React.FC<CreateModalProps> = ({
   return (
     <Modal
       title={title}
-      loading={loading}
+      loading={isPending}
       description={description}
       isOpen={createModal.isOpen}
       onClose={createModal.onClose}
@@ -126,7 +125,7 @@ export const CreateModal: React.FC<CreateModalProps> = ({
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input disabled={loading} placeholder="name" {...field} />
+                  <Input disabled={isPending} placeholder="name" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -178,12 +177,12 @@ export const CreateModal: React.FC<CreateModalProps> = ({
               type="button"
               variant="outline"
               onClick={onCancel}
-              disabled={loading}
+              disabled={isPending}
             >
               Cancel
             </Button>
-            <Button disabled={loading} type="submit">
-              Create {loading && <Spinner className="ml-2 text-white" />}
+            <Button disabled={isPending} type="submit">
+              Create {isPending && <Spinner className="ml-2 text-white" />}
             </Button>
           </div>
         </form>

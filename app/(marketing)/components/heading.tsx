@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const Heading = () => {
+export const Heading = async () => {
+  const cookiesList = cookies();
+  const hasToken = cookiesList.has("token");
+
   return (
     <div className="max-w-5xl space-y-4">
       <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold">
@@ -15,11 +19,13 @@ export const Heading = () => {
         better, faster work happens.
       </h3>
 
-      <Button asChild>
-        <Link href="/home">
-          Enter MicroTech <ArrowRight className="h-4 w-4 ml-2" />
-        </Link>
-      </Button>
+      {!hasToken && (
+        <Button asChild>
+          <Link href="/auth/login">
+            Login <ArrowRight className="h-4 w-4 ml-2" />
+          </Link>
+        </Button>
+      )}
     </div>
   );
 };

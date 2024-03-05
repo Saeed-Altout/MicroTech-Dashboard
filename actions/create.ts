@@ -1,11 +1,18 @@
 "use server";
 
-import { refreshToken } from "@/actions/refresh-token";
+import * as z from "zod";
 import axios, { AxiosError } from "axios";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-export async function getItems(endpoint: string) {
+import { itemSchema } from "@/schemas";
+import { cookies } from "next/headers";
+import { refreshToken } from "./refresh-token";
+import { logout } from "./logout";
+export const createItem = async (
+  values: z.infer<typeof itemSchema>,
+  enterypoint: string,
+  data: any
+) => {
   const cookiesList = cookies();
   const hasToken = cookiesList.has("token");
   const token = cookiesList.get("token");
@@ -13,16 +20,21 @@ export async function getItems(endpoint: string) {
   if (!hasToken) {
     redirect("/auth/login");
   }
+
+  const validatedFields = itemSchema.safeParse(values);
+  if (!validatedFields.success) return { error: "InValid fields" };
+
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/${endpoint}/index`,
+    await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/${enterypoint}/create`,
+      data,
       {
         headers: {
-          Authorization: `Bearer ${token?.value}`,
+          Authorization: `Bearer ${token?.value}` || "",
         },
       }
     );
-    return res.data.data;
+    return { success: "New item created!" };
   } catch (error) {
     if (error instanceof AxiosError) {
       switch (error.response?.status) {
@@ -30,7 +42,7 @@ export async function getItems(endpoint: string) {
           return { error: error.response?.data.message };
         case 401:
           refreshToken(() => {
-            getItems(endpoint);
+            createItem(values, enterypoint, data);
           });
         case 403:
           cookiesList.delete("name");
@@ -44,6 +56,6 @@ export async function getItems(endpoint: string) {
           redirect("/error/un-known");
       }
     }
-    return [];
+    return { error: "Something went wrong!" };
   }
-}
+};
