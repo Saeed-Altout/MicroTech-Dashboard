@@ -9,12 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { Social } from "@/components/auth/social";
 import { BackButton } from "@/components/auth/back-button";
 
 interface CardWrapperProps {
   children: React.ReactNode;
-  social?: boolean;
   title?: string;
   description?: string;
   hrefBackButton: string;
@@ -23,7 +21,6 @@ interface CardWrapperProps {
 
 export const CardWrapper = ({
   children,
-  social,
   title,
   description,
   hrefBackButton,
@@ -38,10 +35,7 @@ export const CardWrapper = ({
           <BackButton href={hrefBackButton} label={labelBackButton} />
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-5">
-        {children}
-        {social && <Social />}
-      </CardContent>
+      <CardContent className="space-y-5">{children}</CardContent>
       <CardFooter>
         <p className="px-8 text-center text-sm text-muted-foreground">
           By clicking {title?.toLowerCase()}, you agree to our{" "}
