@@ -7,6 +7,12 @@ export const LoginSchema = z.object({
     message: "Password is requierd 🔑",
   }),
 });
+
+export const codeSchema = z.object({
+  code: z.string().min(6, {
+    message: "Code Invailed",
+  }),
+});
 export const projectFastSchema = z.object({
   title: z.string(),
   description: z.string(),

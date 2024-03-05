@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Stars, Users, ArrowRight, Circle, CircleDashed } from "lucide-react";
+import { Stars, Users, ArrowRight, Loader } from "lucide-react";
 
 import {
   Card,
@@ -76,7 +76,7 @@ export default async function HomePage() {
           Here will found best projects{" "}
           <span className="font-semibold animate-pulse">Soon</span>
         </p>
-        <CircleDashed className="animate-spin h-10 w-10" />
+        <Loader className="animate-spin h-10 w-10" />
       </div>
     </>
   );

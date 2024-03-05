@@ -17,7 +17,7 @@ interface CardWrapperProps {
   social?: boolean;
   title?: string;
   description?: string;
-  hrefBackButton?: string;
+  hrefBackButton: string;
   labelBackButton?: string;
 }
 
