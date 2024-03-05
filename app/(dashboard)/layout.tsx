@@ -2,12 +2,20 @@ import { Sidebar } from "./components/sidebar";
 import { Navbar } from "./components/navbar";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
-
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookiesList = cookies();
+  const hasToken = cookiesList.has("token");
+
+  if (!hasToken) {
+    redirect("/");
+  }
+
   return (
     <div className="flex h-full w-full">
       <Sidebar />

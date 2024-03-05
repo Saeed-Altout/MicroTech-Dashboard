@@ -1,9 +1,18 @@
 import Image from "next/image";
+import { cookies } from "next/headers";
 
 import { Footer } from "./components/footer";
 import { Heading } from "./components/heading";
+import { redirect } from "next/navigation";
 
-const MarketingPage = () => {
+const MarketingPage = async () => {
+  const cookiesList = cookies();
+  const hasToken = cookiesList.has("token");
+
+  if (!hasToken) {
+    redirect("/auth/login");
+  }
+
   return (
     <div className="min-h-full flex flex-col">
       <div className="flex flex-col items-center justify-center md:justify-start text-center gap-y-8 flex-1 px-6 pb-10">

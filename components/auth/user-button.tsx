@@ -10,9 +10,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { LogoutButton } from "@/components/auth/logout-button";
+import { logout } from "@/actions/logout";
+import { useTransition } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const UserButton = () => {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+  const onLogout = async () => {
+    startTransition(() => {
+      logout().then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        }
+        if (data.success) {
+          toast.success(data.success);
+        }
+      });
+    });
+
+    router.refresh();
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -24,12 +44,14 @@ export const UserButton = () => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">
-        <LogoutButton>
-          <DropdownMenuItem>
-            <ExitIcon className="h-4 w-4 mr-2" />
-            Logout
-          </DropdownMenuItem>
-        </LogoutButton>
+        <DropdownMenuItem
+          disabled={isPending}
+          className="cursor-pointer"
+          onClick={onLogout}
+        >
+          <ExitIcon className="h-4 w-4 mr-2" />
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
