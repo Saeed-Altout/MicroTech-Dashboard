@@ -12,8 +12,11 @@ export const clearToken = async () => {
 export const refreshToken = async () => {
   const refreshToken = hasCookie("refresh_token");
 
+  if (!refreshToken) {
+    return null;
+  }
   try {
-    const res = await GET("auth/refresh_token", refreshToken);
+    const res = await GET("auth/refresh_token", refreshToken.value || "");
 
     setCookie("refresh_token", res.data.data.refresh_token);
     setCookie("token", res.data.data.token);
