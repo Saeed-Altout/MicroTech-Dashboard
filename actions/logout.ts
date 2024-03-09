@@ -23,6 +23,7 @@ export const logout = async () => {
     cookiesList.delete("token");
     return { success: "Logout success" };
   } catch (error) {
-    onError(error);
+    const message = onError(error);
+    return { error: message };
   }
 };
