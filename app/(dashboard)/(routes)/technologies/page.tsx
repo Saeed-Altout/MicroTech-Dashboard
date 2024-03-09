@@ -1,23 +1,21 @@
 import { columns } from "./components/columns";
+import { getTechnologies } from "@/data/technology";
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
-import { CreateModal } from "@/components/modals/create-modal";
+import { CreateDialog } from "@/components/ui/create-dialog";
 import { ClientButton } from "@/components/common/client-button";
 
-import { getItems } from "@/data/item";
-import { TechnologyColumn } from "@/config/config";
-
 export default async function Technologies() {
-  const data: TechnologyColumn[] = await getItems("technology");
+  const data = await getTechnologies();
 
   return (
     <>
-      <CreateModal
+      <CreateDialog
         title="Create Technology"
-        description="Add New technology"
-        enterypoint="technology"
+        description="Add New Technology"
+        endpoint="technology"
       />
       <Heading title="Technologies" description="Welcome in technologies page.">
         <ClientButton />

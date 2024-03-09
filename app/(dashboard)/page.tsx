@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Stars, Users, ArrowRight, Loader } from "lucide-react";
+import { Stars, Users, ArrowRight } from "lucide-react";
 
 import {
   Card,
@@ -13,12 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 
-import { getItems } from "@/data/item";
 import { getProjects } from "@/data/project";
-
+import { getMemberById, getMembers } from "@/data/member";
 export default async function HomePage() {
   const projects = await getProjects();
-  const members = await getItems("member");
+  const members = await getMembers();
+  const member = await getMemberById("1");
+
+  console.log(member);
 
   return (
     <>
@@ -70,13 +72,6 @@ export default async function HomePage() {
             </Button>
           </CardFooter>
         </Card>
-      </div>
-      <div className="h-96 w-full flex justify-center items-center flex-col gap-5">
-        <p className="text-xl">
-          Here will found best projects{" "}
-          <span className="font-semibold animate-pulse">Soon</span>
-        </p>
-        <Loader className="animate-spin h-10 w-10" />
       </div>
     </>
   );

@@ -1,38 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { toast } from "sonner";
+import { useState, useTransition } from "react";
+import { Edit, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import axios from "axios";
-import { toast } from "sonner";
-import { Trash, Edit } from "lucide-react";
-
-import { AlertModal } from "@/components/modals/alert-modal";
-import { MemberColumn } from "@/config/config";
-
-import { Button } from "@/components/ui/button";
 import * as z from "zod";
-import { memberSchema } from "@/schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { Form } from "@/components/ui/form";
 import { Modal } from "@/components/ui/modal";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
+import { FormInput } from "@/components/ui/form-input";
+import { FormFooter } from "@/components/ui/form-footer";
+import { DeleteDialog } from "@/components/ui/delete-dialog";
+
+import { edit } from "@/actions/edit";
+import { trash } from "@/actions/trash";
+import { create } from "@/actions/create";
+
+import { memberSchema } from "@/schemas";
+import { Button } from "@/components/ui/button";
+import { MemberColumn } from "@/config/config";
 
 export const CellAction = ({ data }: { data: MemberColumn }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isDelete, setIsDelete] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-
+  const [loading, startTransition] = useTransition();
   const router = useRouter();
 
   const form = useForm<z.infer<typeof memberSchema>>({
@@ -44,52 +38,49 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
     },
   });
 
-  const onConfirm = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/member/delete?id=${data?.id}`
-      );
-      toast.success(`${data?.name} deleted!`);
-
-      setIsDelete(false);
-      router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const onCancel = () => {
     form.reset();
     setIsEdit(false);
   };
 
-  const onSubmit = async (values: z.infer<typeof memberSchema>) => {
-    try {
-      setLoading(true);
+  const onConfirm = async () => {
+    startTransition(() => {
+      trash("member", data?.id.toString()).then((data) => {
+        if (data?.error) {
+          toast.error(data.error);
+        }
+        if (data?.success) {
+          toast.success(data.success);
+          router.refresh();
+          setIsDelete(false);
+        }
+      });
+    });
+  };
 
-      await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/member/edit`, {
-        id: data.id,
+  const onSubmit = async (values: z.infer<typeof memberSchema>) => {
+    startTransition(() => {
+      edit("member", {
+        id: data.id.toString(),
         name: values.name,
         email: values.email,
         phone: values.phone,
+      }).then((data) => {
+        if (data?.error) {
+          toast.error(data.error);
+        }
+        if (data?.success) {
+          onCancel();
+          toast.success(data.success);
+          router.refresh();
+        }
       });
-
-      toast.success(`${data.name} edited!`);
-      onCancel();
-      router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   return (
     <>
-      <AlertModal
+      <DeleteDialog
         isOpen={isDelete}
         loading={loading}
         onConfirm={onConfirm}
@@ -102,84 +93,35 @@ export const CellAction = ({ data }: { data: MemberColumn }) => {
         loading={loading}
         onClose={() => setIsEdit(false)}
       >
-        <div className="space-y-4 py-2 pb-4">
-          <div className="space-y-2">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-5"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={loading}
-                          placeholder="name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={loading}
-                          placeholder="email"
-                          type="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="phone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Phone</FormLabel>
-                      <FormControl>
-                        <Input
-                          disabled={loading}
-                          placeholder="phone"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <FormInput
+              name="name"
+              placeholder="name"
+              label="Name"
+              loading={loading}
+            />
+            <FormInput
+              name="email"
+              placeholder="email"
+              label="Email"
+              type="email"
+              loading={loading}
+            />
+            <FormInput
+              name="phone"
+              placeholder="phone number"
+              label="Phone Number"
+              loading={loading}
+            />
 
-                <div className="pt-6 flex items-center justify-end gap-4 w-full">
-                  <Button
-                    disabled={loading}
-                    variant="outline"
-                    type="button"
-                    onClick={onCancel}
-                  >
-                    Cancel
-                  </Button>
-                  <Button disabled={loading} type="submit">
-                    Save Changes
-                    {loading && <Spinner className="ml-2 text-white" />}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </div>
-        </div>
+            <FormFooter
+              label="Save changes"
+              onClose={onCancel}
+              loading={loading}
+            />
+          </form>
+        </Form>
       </Modal>
 
       <div className="flex items-center justify-center gap-5">

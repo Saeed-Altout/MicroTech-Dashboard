@@ -3,21 +3,19 @@ import { columns } from "./components/columns";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
-import { CreateModal } from "@/components/modals/create-modal";
+import { CreateDialog } from "@/components/ui/create-dialog";
 import { ClientButton } from "@/components/common/client-button";
-
-import { getItems } from "@/data/item";
-import { WorkTypeColumn } from "@/config/config";
+import { getWorkTypes } from "@/data/worktype";
 
 export default async function WorkTypesPage() {
-  const data: WorkTypeColumn[] = await getItems("work_types");
+  const data = await getWorkTypes();
 
   return (
     <>
-      <CreateModal
-        title="Create Work_type"
-        description="Add New Work Types"
-        enterypoint="work_types"
+      <CreateDialog
+        title="Create Work Type"
+        description="Add New Work Type"
+        endpoint="work_types"
       />
       <Heading title="Work Types" description="Welcome in work types page.">
         <ClientButton />

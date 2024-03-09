@@ -34,8 +34,6 @@ export const columns: ColumnDef<PlatformColumn>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <CellAction data={row.original} enterypoint="platform" />
-    ),
+    cell: ({ row }) => <CellAction data={row.original} endpoint="platform" />,
   },
 ];

@@ -15,7 +15,6 @@ import { Item } from "./item";
 import { LinksProps, RoutesProps, routes } from "@/config/config";
 
 import { useCreateProjectModal } from "@/hooks/use-create-project-modal";
-import { usePathname } from "next/navigation";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

@@ -2,14 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Check,
-  ChevronDown,
-  ChevronRight,
-  ChevronsDown,
-  ChevronsUpDown,
-  PlusCircle,
-} from "lucide-react";
+import { Check, ChevronDown, PlusCircle } from "lucide-react";
 
 import {
   Command,
@@ -35,7 +28,7 @@ type PopoverTriggerProps = React.ComponentPropsWithoutRef<
   typeof PopoverTrigger
 >;
 
-interface StoreSwitcherProps extends PopoverTriggerProps {
+interface FormPopoverProps extends PopoverTriggerProps {
   items: Record<string, number>[];
   name: string;
   label?: string;
@@ -43,14 +36,14 @@ interface StoreSwitcherProps extends PopoverTriggerProps {
   href: string;
 }
 
-export const FormSelect = ({
+export const FormPopover = ({
   className,
   items = [],
   name,
   heading,
   href,
   label,
-}: StoreSwitcherProps) => {
+}: FormPopoverProps) => {
   const [selected, setSelected] = useState<number[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const { getValues, control } = useFormContext();
@@ -84,7 +77,7 @@ export const FormSelect = ({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="w-full">
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -98,8 +91,8 @@ export const FormSelect = ({
                 <ChevronDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="col-span-1 w-full p-0">
-              <Command>
+            <PopoverContent className="p-0 ">
+              <Command className="w-full">
                 <CommandList>
                   <CommandInput placeholder="Search item..." />
                   <CommandEmpty>No item found.</CommandEmpty>

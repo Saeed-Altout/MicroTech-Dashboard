@@ -1,32 +1,23 @@
 "use client";
 
-import axios from "axios";
-import Image from "next/image";
-import { toast } from "sonner";
-import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 import * as z from "zod";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { Modal } from "@/components/ui/modal";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 
 import { itemSchema } from "@/schemas";
 import { useCreateModal } from "@/hooks/use-create-modal";
-import { createItem } from "@/actions/create";
+import { create } from "@/actions/create";
+import { FormInput } from "@/components/ui/form-input";
+import { useImageContext } from "@/contexts/image-contex";
+import { FormImage } from "../ui/form-image";
+import { FormFooter } from "../ui/form-footer";
 interface CreateModalProps {
   title: string;
   description: string;
@@ -38,11 +29,13 @@ export const CreateModal: React.FC<CreateModalProps> = ({
   description,
   enterypoint,
 }) => {
+  const { files, setFiles } = useImageContext();
+
   const [isMounted, setIsMounted] = useState<boolean>(false);
-  const [files, setFiles] = useState<File[]>([]);
+  const [isPending, startTransition] = useTransition();
+
   const createModal = useCreateModal();
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof itemSchema>>({
     resolver: zodResolver(itemSchema),
@@ -52,49 +45,25 @@ export const CreateModal: React.FC<CreateModalProps> = ({
     },
   });
 
-  const handleImage = (
-    e: ChangeEvent<HTMLInputElement>,
-    fieldChange: (value: string) => void
-  ) => {
-    e.preventDefault();
-    const fileReader = new FileReader();
-
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFiles(Array.from(e.target.files));
-
-      if (!file.type.includes("image")) return;
-
-      fileReader.onload = async (event) => {
-        const imageDataUrl = event.target?.result?.toString() || "";
-        fieldChange(imageDataUrl);
-      };
-
-      fileReader.readAsDataURL(file);
-    }
-  };
-
-  const onCancel = () => {
+  const onClose = () => {
     createModal.onClose();
     form.reset();
     setFiles([]);
   };
 
-  const onSubmit = async (values: z.infer<typeof itemSchema>) => {
-    let data = new FormData();
-
-    data.append("icon", files[0]);
-    data.append("name", values.name);
-
+  const onSubmit = (values: z.infer<typeof itemSchema>) => {
+    let newData = new FormData();
+    newData.append("icon", files[0]);
+    newData.append("name", values.name);
     startTransition(() => {
-      createItem(values, enterypoint, data).then((data) => {
+      create(enterypoint, newData).then((data) => {
         if (data?.error) {
           toast.error(data.error);
         }
         if (data?.success) {
+          onClose();
           toast.success(data.success);
           router.refresh();
-          onCancel();
         }
       });
     });
@@ -113,78 +82,24 @@ export const CreateModal: React.FC<CreateModalProps> = ({
       title={title}
       loading={isPending}
       description={description}
-      isOpen={createModal.isOpen}
+      isOpen={false}
       onClose={createModal.onClose}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
+          <FormInput
             name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input disabled={isPending} placeholder="name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Name"
+            placeholder="name"
+            loading={isPending}
           />
-          <FormField
-            control={form.control}
+          <FormImage
             name="icon"
-            render={({ field }) => (
-              <FormItem className="relative">
-                <FormLabel className="cursor-pointer h-[250px] w-full border-dashed border rounded-md flex justify-center items-center">
-                  {field.value ? (
-                    <div className="h-20 w-20 overflow-hidden">
-                      <Image
-                        src={field.value}
-                        alt="Icon"
-                        width={100}
-                        height={100}
-                        loading="eager"
-                        className="object-contain"
-                        style={{ width: "100%", height: "auto" }}
-                        onError={(e: any) => {
-                          e.target.src = "./logo-icon.svg";
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <ImagePlus
-                      strokeWidth={0.5}
-                      className="w-20 h-20 text-muted-foreground"
-                    />
-                  )}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    className="w-full h-[250px] hidden"
-                    type="file"
-                    accept="image/*"
-                    placeholder="Upload a photo"
-                    onChange={(e) => handleImage(e, field.onChange)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Icon"
+            placeholder="uplaod image"
+            loading={isPending}
           />
-          <div className="pt-6 flex items-center justify-end gap-4 w-full">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isPending}
-            >
-              Cancel
-            </Button>
-            <Button disabled={isPending} type="submit">
-              Create {isPending && <Spinner className="ml-2 text-white" />}
-            </Button>
-          </div>
+          <FormFooter label="Create" loading={isPending} onClose={onClose} />
         </form>
       </Form>
     </Modal>

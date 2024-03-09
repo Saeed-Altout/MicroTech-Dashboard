@@ -34,8 +34,6 @@ export const columns: ColumnDef<WorkTypeColumn>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <CellAction data={row.original} enterypoint="work_types" />
-    ),
+    cell: ({ row }) => <CellAction data={row.original} endpoint="work_types" />,
   },
 ];

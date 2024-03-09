@@ -1,33 +1,44 @@
 import axios from "axios";
+import { api } from "@/lib/api";
+import { onError } from "@/lib/error";
 
 export async function getProjects() {
+  const { baseUrl, config } = api();
+
+  const url = `${baseUrl}/project`;
+
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/project/index`
-    );
+    const res = await axios.get(`${url}/index`, config);
     return res.data.data.data;
   } catch (error) {
+    onError(error);
     return [];
   }
 }
 
 export async function getProjectById(id: string) {
+  const { baseUrl, config } = api();
+
+  const url = `${baseUrl}/project`;
+
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/project/index?id=${id}`
-    );
+    const res = await axios.get(`${url}/index?id=${id}`, config);
     return res.data.data;
   } catch (error) {
-    return [];
+    onError(error);
+    return null;
   }
 }
-export async function getConstData() {
+export async function getConstDataProject() {
+  const { baseUrl, config } = api();
+
+  const url = `${baseUrl}/project`;
+
   try {
-    const res = await axios.get(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/project/get_groups`
-    );
+    const res = await axios.get(`${url}/get_groups`, config);
     return res.data.data;
   } catch (error) {
+    onError(error);
     return [];
   }
 }

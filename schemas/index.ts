@@ -1,4 +1,5 @@
 import * as z from "zod";
+
 export const LoginSchema = z.object({
   username: z.string().min(1, {
     message: "Username is requierd 🙄",
@@ -49,6 +50,15 @@ export const projectSchema = z.object({
     z.number().min(1, { message: "Platforms must not be empty" })
   ),
   members: z.array(z.number().min(1, { message: "Members must not be empty" })),
+});
+
+export const imagesSchema = z.object({
+  images: z.array(
+    z.object({
+      id: z.optional(z.any()),
+      imgUrl: z.string(),
+    })
+  ),
 });
 
 export const itemSchema = z.object({

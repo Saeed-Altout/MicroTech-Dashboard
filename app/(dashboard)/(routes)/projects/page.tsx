@@ -7,13 +7,10 @@ import { DataTable } from "./components/data-table";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-
-import { getItems } from "@/data/item";
-import { ProjectColumn } from "@/config/config";
+import { getProjects } from "@/data/project";
 
 export default async function ProjectsPage() {
-  const data = await getItems("project");
-  const projects: ProjectColumn[] = data.data;
+  const data = await getProjects();
 
   return (
     <>
@@ -26,7 +23,7 @@ export default async function ProjectsPage() {
         </Link>
       </Heading>
       <Separator />
-      <DataTable columns={columns} data={projects} searchKey="title" />
+      <DataTable columns={columns} data={data} searchKey="title" />
     </>
   );
 }

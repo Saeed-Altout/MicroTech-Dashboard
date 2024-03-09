@@ -2,14 +2,14 @@ import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 
 import { FormProject } from "./components/form-project";
-import { getConstData, getProjectById } from "@/data/project";
+import { getConstDataProject, getProjectById } from "@/data/project";
 
-export default async function NewProject({
+export default async function NewProjectPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const constData = await getConstData();
+  const constData = await getConstDataProject();
   const initialData = await getProjectById(params.id);
 
   const title = initialData ? "Edit project" : "Create Project";
@@ -23,14 +23,3 @@ export default async function NewProject({
     </>
   );
 }
-
-// Notes
-// const addImageField = () => {
-//   form.setValue("advantages", [...form.getValues("advantages"), ""]);
-// };
-
-// const removeImagesField = (index: number) => {
-//   const updatedImages = [...form.getValues("advantages")];
-//   updatedImages.splice(index, 1);
-//   form.setValue("advantages", updatedImages);
-// };

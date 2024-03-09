@@ -23,6 +23,8 @@ import { VerificationForm } from "@/components/auth/verification-form";
 
 import { LoginSchema } from "@/schemas";
 import { login } from "@/actions/login";
+import axios from "axios";
+import { onError } from "@/lib/error";
 
 export const LoginForm = () => {
   const [open, setOpen] = useState<boolean>(false);
@@ -37,19 +39,23 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-    startTransition(() => {
-      login(values).then((data) => {
-        if (data.error) {
-          toast.error(data.error);
+  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/"auth/send_code"`,
+        {
+          user_name: values.username,
+          password: values.password,
         }
-        if (data.success) {
-          toast.success(data.success);
-          setUsername(values.username);
-          setOpen(true);
-        }
-      });
-    });
+      );
+      console.log(res);
+
+      return {
+        success: "Success, check your email. we had sent code for you.",
+      };
+    } catch (error) {
+      onError(error);
+    }
   };
 
   return (
@@ -110,7 +116,7 @@ export const LoginForm = () => {
               size="sm"
               onClick={() => setOpen(true)}
             >
-              Do you have code?
+              Do you have a code?
             </Button>
             <Button disabled={isPending} type="submit" className="w-full">
               Login {isPending && <Spinner className="ml-2" />}

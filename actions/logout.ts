@@ -1,5 +1,6 @@
 "use server";
 
+import { onError } from "@/lib/error";
 import axios from "axios";
 import { cookies } from "next/headers";
 
@@ -22,6 +23,6 @@ export const logout = async () => {
     cookiesList.delete("token");
     return { success: "Logout success" };
   } catch (error) {
-    return { error: "Something went wrong!" };
+    onError(error);
   }
 };

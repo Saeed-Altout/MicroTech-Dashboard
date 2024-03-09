@@ -1,13 +1,13 @@
 "use client";
 
-import axios from "axios";
 import Image from "next/image";
-import { toast } from "sonner";
-import { ImagePlus } from "lucide-react";
-import { ChangeEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import { ChangeEvent, useState } from "react";
 
 import * as z from "zod";
+import axios from "axios";
+import { toast } from "sonner";
+import { ImagePlus } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -19,19 +19,12 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
-
-import { ProjectColumn } from "@/config/config";
+import { FormFooter } from "@/components/ui/form-footer";
 import { Heading } from "../../components/heading";
 
-const formSchema = z.object({
-  images: z.array(
-    z.object({
-      imgUrl: z.string(),
-    })
-  ),
-});
+import { onError } from "@/lib/error";
+import { imagesSchema } from "@/schemas";
+import { ProjectColumn } from "@/config/config";
 
 export const FormProjectImages = ({
   initialData,
@@ -48,20 +41,10 @@ export const FormProjectImages = ({
   >([]);
   const router = useRouter();
 
-  let imagesInitalValue: {
-    imgUrl: string;
-  }[] = [];
-
-  initialData?.images.forEach((image: any | undefined) =>
-    imagesInitalValue.push({
-      imgUrl: image.image_url as string,
-    })
-  );
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof imagesSchema>>({
+    resolver: zodResolver(imagesSchema),
     defaultValues: {
-      images: imagesInitalValue || [],
+      images: [],
     },
   });
 
@@ -95,48 +78,39 @@ export const FormProjectImages = ({
       fileReader.readAsDataURL(file);
     }
   };
+
   const { fields, append, remove } = useFieldArray({
     name: "images",
     control: form.control,
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onCancel = () => {
+    form.reset();
+    setFiles([]);
+    router.push("/projects");
+  };
+
+  const onSubmit = async (values: z.infer<typeof imagesSchema>) => {
     const newData = new FormData();
 
     newData.append("project_id", initialData?.id.toString());
+    imagesToUpload.forEach((image, index) => {
+      newData.append(`images[${image.id}]`, image.file);
+    });
 
     try {
       setLoading(true);
-      if (initialData.images.length > 0) {
-        imagesToUpload.forEach((image, index) => {
-          newData.append(
-            `images[${index}]`,
-            initialData.images[index].id.toString()
-          );
-          newData.append(`images[${index}]`, image.file);
-        });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/project/add_images`,
+        newData
+      );
 
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/project/edit_images`,
-          newData
-        );
-        toast.success("Images Edited!");
-      } else {
-        imagesToUpload.forEach((image, index) => {
-          newData.append(`images[${index}]`, image.file);
-        });
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/project/add_images`,
-          newData
-        );
-        toast.success("Images Uploaded!");
-      }
-
-      setFiles([]);
+      toast.success("Images Uploaded!");
+      onCancel();
       router.refresh();
-      router.push("/projects");
     } catch (error) {
-      toast.error("Something went wrong!");
+      const message = onError(error);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -144,72 +118,68 @@ export const FormProjectImages = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className="flex flex-col gap-y-6 max-w-7xl mx-auto">
-          <div className="space-y-6">
-            {initialData.images.length <= 0 && (
-              <Heading
-                label="Images:"
-                onRemove={() => remove(fields.length - 1)}
-                onAppend={() => append({ imgUrl: "" })}
-              />
-            )}
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex flex-col gap-y-6 max-w-7xl mx-auto"
+      >
+        <div className="space-y-6">
+          <Heading
+            label="Images:"
+            onRemove={() => remove(fields.length - 1)}
+            onAppend={() => append({ imgUrl: "" })}
+          />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {fields.map((field, index) => (
-                <FormField
-                  key={index}
-                  control={form.control}
-                  name={`images.${index}.imgUrl`}
-                  render={({ field }) => (
-                    <FormItem className="relative">
-                      <FormLabel className="cursor-pointer h-[250px] w-full border-dashed border rounded-md flex justify-center items-center">
-                        {field.value ? (
-                          <div className="h-full w-full overflow-hidden">
-                            <Image
-                              src={field.value}
-                              alt="Icon"
-                              width={1000}
-                              height={1000}
-                              loading="eager"
-                              className="object-cover"
-                              style={{ width: "100%", height: "auto" }}
-                              onError={(e: any) => {
-                                e.target.src = "./logo-icon.svg";
-                              }}
-                            />
-                          </div>
-                        ) : (
-                          <ImagePlus
-                            strokeWidth={0.5}
-                            className="w-20 h-20 text-muted-foreground"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {fields.map((field, index) => (
+              <FormField
+                key={index}
+                control={form.control}
+                name={`images.${index}.imgUrl`}
+                render={({ field }) => (
+                  <FormItem className="relative">
+                    <FormLabel className="cursor-pointer h-[250px] w-full border-dashed border rounded-md flex justify-center items-center">
+                      {field.value ? (
+                        <div className="h-full w-full overflow-hidden">
+                          <Image
+                            src={field.value}
+                            alt="Icon"
+                            width={1000}
+                            height={1000}
+                            loading="eager"
+                            className="object-cover"
+                            style={{ width: "100%", height: "auto" }}
+                            onError={(e: any) => {
+                              e.target.src = "./logo-icon.svg";
+                            }}
                           />
-                        )}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="w-full h-[250px] hidden"
-                          type="file"
-                          accept="image/*"
-                          placeholder="Upload a photo"
-                          onChange={(e) =>
-                            handleImage(e, field.onChange, index)
-                          }
+                        </div>
+                      ) : (
+                        <ImagePlus
+                          strokeWidth={0.5}
+                          className="w-20 h-20 text-muted-foreground"
                         />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="flex pt-20">
-            <Button type="submit">
-              {initialData.images.length > 0 ? "Save Changes" : "Upload Images"}
-              {loading && <Spinner className="text-white ml-2" />}
-            </Button>
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="w-full h-[250px] hidden"
+                        type="file"
+                        accept="image/*"
+                        placeholder="Upload a photo"
+                        onChange={(e) => handleImage(e, field.onChange, index)}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            ))}
           </div>
         </div>
+        <FormFooter
+          label="Upload Images"
+          onClose={onCancel}
+          loading={loading}
+        />
       </form>
     </Form>
   );

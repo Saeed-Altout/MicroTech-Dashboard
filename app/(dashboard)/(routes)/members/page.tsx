@@ -1,20 +1,18 @@
 import { columns } from "./components/columns";
+import { getMembers } from "@/data/member";
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 import { ClientButton } from "@/components/common/client-button";
-import { CreateModalMember } from "@/components/modals/create-member-modal";
-
-import { getItems } from "@/data/item";
-import { MemberColumn } from "@/config/config";
+import { CreateMemberDialog } from "@/components/ui/create-member-dialog";
 
 export default async function MembersPage() {
-  const data: MemberColumn[] = await getItems("member");
+  const data = await getMembers();
 
   return (
     <>
-      <CreateModalMember />
+      <CreateMemberDialog />
       <Heading title="Members" description="Welcome in members page.">
         <ClientButton />
       </Heading>

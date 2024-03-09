@@ -1,60 +1,58 @@
 "use client";
 
-import axios from "axios";
 import { toast } from "sonner";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Trash, Edit } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { AlertModal } from "@/components/modals/alert-modal";
-import { EditModal } from "@/components/modals/edit-modal";
+import { EditDialog } from "@/components/ui/edit-dialog";
+import { DeleteDialog } from "@/components/ui/delete-dialog";
 
 import { Item } from "@/config/config";
+import { trash } from "@/actions/trash";
 
 export const CellAction = ({
   data,
-  enterypoint,
+  endpoint,
 }: {
   data: Item;
-  enterypoint: string;
+  endpoint: string;
 }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isDelete, setIsDelete] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, startTransition] = useTransition();
 
   const router = useRouter();
 
   const onConfirm = async () => {
-    try {
-      setLoading(true);
-      await axios.delete(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/${enterypoint}/delete?id=${data?.id}`
-      );
-      toast.success(`${data?.name} deleted!`);
-
-      setIsDelete(false);
-      router.refresh();
-    } catch (error) {
-      toast.error("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
+    startTransition(() => {
+      trash(endpoint, data?.id.toString()).then((data) => {
+        if (data?.error) {
+          toast.error(data.error);
+        }
+        if (data?.success) {
+          toast.success(data.success);
+          router.refresh();
+          setIsDelete(false);
+        }
+      });
+    });
   };
 
   return (
     <>
-      <AlertModal
+      <DeleteDialog
         isOpen={isDelete}
         loading={loading}
         onConfirm={onConfirm}
         onClose={() => setIsDelete(false)}
       />
 
-      <EditModal
-        title={`Edit ${enterypoint}`}
-        description={`you can edit ${enterypoint}.`}
-        entrypoint={enterypoint}
+      <EditDialog
+        title={`Edit ${endpoint}`}
+        description={`You can edit ${endpoint}.`}
+        endpoint={endpoint}
         data={data}
         isOpen={isEdit}
         onClose={() => setIsEdit(false)}

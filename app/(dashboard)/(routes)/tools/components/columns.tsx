@@ -34,6 +34,6 @@ export const columns: ColumnDef<ToolColumn>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <CellAction data={row.original} enterypoint="tool" />,
+    cell: ({ row }) => <CellAction data={row.original} endpoint="tool" />,
   },
 ];

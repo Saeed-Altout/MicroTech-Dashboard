@@ -1,61 +1,38 @@
 "use client";
 
 import Image from "next/image";
-import axios from "axios";
-import { toast } from "sonner";
-import {
-  AlignCenter,
-  AlignCenterHorizontal,
-  AlignCenterHorizontalIcon,
-  AlignHorizontalDistributeCenter,
-  AlignLeft,
-  AlignRight,
-  AlignVerticalSpaceBetween,
-  ArrowDownWideNarrow,
-  ArrowLeftRight,
-  ArrowUpNarrowWide,
-  ChevronFirst,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeftRight,
-  ImagePlus,
-  LucideArrowUpNarrowWide,
-} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 
 import * as z from "zod";
+import axios from "axios";
+import { toast } from "sonner";
+import { ImagePlus } from "lucide-react";
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { FormSelect } from "@/components/common/form-select";
+import { FormInput } from "@/components/ui/form-input";
+import { FormSelect } from "@/components/ui/form-select";
+import { FormPopover } from "@/components/ui/form-popover";
+import { FormFooter } from "@/components/ui/form-footer";
+
 import { Heading } from "./heading";
 import { projectSchema } from "@/schemas";
-import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
+import { ProjectColumn } from "@/config/config";
+import { onError } from "@/lib/error";
 
 interface FormProjectProps {
-  initialData?: any;
-  constant?: any;
+  initialData: ProjectColumn;
+  constant: any;
 }
 
 export const FormProject = ({ initialData, constant }: FormProjectProps) => {
@@ -63,9 +40,9 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
   const [filesLogo, setFilesLogo] = useState<File[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [align, setAlign] = useState<
-    "center" | "left" | "right" | "wide" | "narrow"
-  >("center");
+
+  const platforms = ["Github", "Facebook", "Instgram", "Other"];
+
   let advantagesInitalValue: {
     value: string;
   }[] = [];
@@ -82,7 +59,7 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
     resolver: zodResolver(projectSchema),
     defaultValues: {
       ...getInitialValues(initialData),
-      advantages: advantagesInitalValue || "",
+      advantages: advantagesInitalValue || [],
     },
   });
 
@@ -156,16 +133,12 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
   };
 
   const onSubmit = async (values: z.infer<typeof projectSchema>) => {
-    let advantages: string[] = [];
     let data = new FormData();
+    let advantages: string[] = [];
+    values.advantages.forEach((advantage) => advantages.push(advantage.value));
 
     try {
       setLoading(true);
-
-      values.advantages.forEach((advantage) =>
-        advantages.push(advantage.value)
-      );
-
       if (initialData) {
         filesLogo[0] !== undefined && data.append("logo", filesLogo[0]);
         filesCover[0] !== undefined && data.append("cover", filesCover[0]);
@@ -226,7 +199,8 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
       onCancel();
       router.refresh();
     } catch (error) {
-      toast.error("Something went wrong!");
+      const message = onError(error);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -235,296 +209,199 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
   return (
     <FormProvider {...form}>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-y-6 max-w-7xl mx-auto">
-            <div className="relative h-[400px] lg:h-[500px] w-full overflow-hidden col-span-1 md:col-span-2">
-              <FormField
-                control={form.control}
-                name="cover"
-                render={({ field }) => (
-                  <FormItem className="relative">
-                    <FormLabel className="cursor-pointer h-[400px] lg:h-[500px] w-full border-dashed border rounded-md flex justify-center items-center overflow-hidden">
-                      {field.value ? (
-                        <div className="h-full w-full overflow-hidden">
-                          <Image
-                            src={field.value}
-                            alt="Cover"
-                            width={1000}
-                            height={1000}
-                            loading="eager"
-                            className="object-cover"
-                            style={{ width: "100%", height: "auto" }}
-                            onError={(e: any) => {
-                              e.target.src = "./logo-icon.svg";
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <ImagePlus strokeWidth={0.2} className="w-20 h-20" />
-                      )}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        className="w-full h-[250px] hidden"
-                        type="file"
-                        disabled={loading}
-                        accept="image/*"
-                        onChange={(e) => handleImageCover(e, field.onChange)}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="logo"
-                render={({ field }) => (
-                  <FormItem className="absolute w-24 h-24 bottom-4 left-4 bg-transparent rounded-md">
-                    <FormLabel className="bg-background cursor-pointer h-full flex justify-center items-center gap-3 border-dashed border rounded-md overflow-hidden py-3">
-                      {field.value ? (
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="flex flex-col gap-y-6 max-w-7xl mx-auto"
+        >
+          <div className="relative h-[400px] lg:h-[500px] w-full overflow-hidden col-span-1 md:col-span-2">
+            <FormField
+              control={form.control}
+              name="cover"
+              render={({ field }) => (
+                <FormItem className="relative">
+                  <FormLabel className="cursor-pointer h-[400px] lg:h-[500px] w-full border-dashed border rounded-md flex justify-center items-center overflow-hidden">
+                    {field.value ? (
+                      <div className="h-full w-full overflow-hidden">
                         <Image
                           src={field.value}
-                          alt="Logo"
+                          alt="Cover"
+                          width={1000}
+                          height={1000}
                           loading="eager"
-                          fill
-                          className="object-contain max-w-16 max-h-16 m-auto"
+                          className="object-cover"
+                          style={{ width: "100%", height: "auto" }}
                           onError={(e: any) => {
-                            e.target.src = "./logo-icon-dark.svg";
+                            e.target.src = "./logo-icon.svg";
                           }}
                         />
-                      ) : (
-                        <div className="flex flex-col justify-center items-center text-center gap-y-2 text-xs">
-                          <ImagePlus strokeWidth={0.5} className="w-5 h-5" />
-                          <p className="text-muted-foreground">Upload Logo</p>
-                        </div>
-                      )}
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        disabled={loading}
-                        className="hidden"
-                        onChange={(e) => handleImageLogo(e, field.onChange)}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            </div>
-            <Separator />
-
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input disabled={loading} placeholder="title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="functionality"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Functionality</FormLabel>
+                      </div>
+                    ) : (
+                      <ImagePlus strokeWidth={0.2} className="w-20 h-20" />
+                    )}
+                  </FormLabel>
                   <FormControl>
                     <Input
+                      className="w-full h-[250px] hidden"
+                      type="file"
                       disabled={loading}
-                      placeholder="functionality"
-                      {...field}
+                      accept="image/*"
+                      onChange={(e) => handleImageCover(e, field.onChange)}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
-              name="about"
+              name="logo"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>About</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={loading}
-                      rows={6}
-                      placeholder="about"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      disabled={loading}
-                      rows={6}
-                      placeholder="description"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Separator />
-            <div className="space-y-5">
-              <Heading
-                label="Advantages:"
-                onRemove={() => removeAdvantage(advantagesFields.length - 1)}
-                onAppend={() => appendAdvantage({ value: "" })}
-              />
-
-              <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 items-start gap-6">
-                {advantagesFields.map((field, index) => (
-                  <FormField
-                    key={index}
-                    control={form.control}
-                    name={`advantages.${index}.value`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            disabled={loading}
-                            placeholder="advantage"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                <FormItem className="absolute w-24 h-24 bottom-4 left-4 bg-transparent rounded-md">
+                  <FormLabel className="bg-background cursor-pointer h-full flex justify-center items-center gap-3 border-dashed border rounded-md overflow-hidden py-3">
+                    {field.value ? (
+                      <Image
+                        src={field.value}
+                        alt="Logo"
+                        loading="eager"
+                        fill
+                        className="object-contain max-w-16 max-h-16 m-auto"
+                        onError={(e: any) => {
+                          e.target.src = "./logo-icon-dark.svg";
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col justify-center items-center text-center gap-y-2 text-xs">
+                        <ImagePlus strokeWidth={0.5} className="w-5 h-5" />
+                        <p className="text-muted-foreground">Upload Logo</p>
+                      </div>
                     )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      disabled={loading}
+                      className="hidden"
+                      onChange={(e) => handleImageLogo(e, field.onChange)}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+          <FormInput
+            name="title"
+            label="Title"
+            placeholder="title"
+            loading={loading}
+          />
+          <FormInput
+            name="functionality"
+            label="Functionality"
+            placeholder="functionality"
+            loading={loading}
+          />
+          <FormInput
+            name="about"
+            label="About"
+            placeholder="about"
+            loading={loading}
+            textarea
+          />
+          <FormInput
+            name="description"
+            label="Description"
+            placeholder="description"
+            loading={loading}
+            textarea
+          />
+          <Separator />
+          <div className="space-y-5">
+            <Heading
+              label="Advantages:"
+              onRemove={() => removeAdvantage(advantagesFields.length - 1)}
+              onAppend={() => appendAdvantage({ value: "" })}
+            />
+
+            <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 items-start gap-6">
+              {advantagesFields.map((field, index) => (
+                <FormInput
+                  key={index}
+                  name={`advantages.${index}.value`}
+                  placeholder="advantage"
+                  loading={loading}
+                />
+              ))}
+            </div>
+          </div>
+          <Separator />
+          <div className="space-y-5">
+            <Heading
+              label="Links:"
+              onRemove={() => removeLink(linksFields.length - 1)}
+              onAppend={() => appendLink({ platform: "", link: "" })}
+            />
+
+            <div className="grid grid-flow-row grid-cols-1 lg:grid-cols-2 items-start gap-6">
+              {linksFields.map((field, index) => (
+                <div key={index} className="flex gap-5">
+                  <FormSelect
+                    name={`links.${index}.link`}
+                    placeholder="Select"
+                    loading={loading}
+                    items={platforms}
                   />
-                ))}
-              </div>
+                  <FormInput
+                    name={`links.${index}.platform`}
+                    placeholder="url"
+                    loading={loading}
+                  />
+                </div>
+              ))}
             </div>
-            <div className="space-y-5">
-              <Heading
-                label="Links:"
-                onRemove={() => removeLink(linksFields.length - 1)}
-                onAppend={() => appendLink({ platform: "", link: "" })}
-              />
-
-              <div className="grid grid-flow-row grid-cols-1 lg:grid-cols-2 items-start gap-6">
-                {linksFields.map((field, index) => (
-                  <div key={index} className="flex gap-5">
-                    <FormField
-                      control={form.control}
-                      name={`links.${index}.link`}
-                      render={({ field }) => (
-                        <FormItem className="w-36">
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {platforms?.map((platform, index) => (
-                                <SelectItem
-                                  disabled={loading}
-                                  value={platform}
-                                  key={index}
-                                >
-                                  {platform}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`links.${index}.platform`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormControl>
-                            <Input
-                              disabled={loading}
-                              placeholder="Url"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <Separator />
-
-            <FormSelect
+          </div>
+          <Separator />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <FormPopover
               items={constant.technologies}
               name="technologies"
               heading="Technologies"
               href="/technologies"
               label="Create Technology"
             />
-            <FormSelect
+            <FormPopover
               items={constant.toolsKit}
               name="tools"
               heading="Tools-Kit"
               href="/tools"
               label="Create Tool-kit"
             />
-            <FormSelect
+            <FormPopover
               items={constant.members}
               name="members"
               heading="Members"
               href="/members"
               label="Create Member"
             />
-            <FormSelect
+            <FormPopover
               items={constant.platforms}
               name="platforms"
               heading="Platforms"
               href="/platforms"
               label="Create Platform"
             />
-            <FormSelect
+            <FormPopover
               items={constant.workTypes}
               name="work_types"
               heading="Work Types"
               href="/work_types"
               label="Create Work Type"
             />
-            <div className="flex items-center gap-4 w-full pt-20">
-              <Button
-                disabled={loading}
-                variant="outline"
-                type="button"
-                onClick={onCancel}
-              >
-                Cancel
-              </Button>
-              <Button disabled={loading} type="submit">
-                {initialData ? "Save Changes" : "Create Project"}
-                {loading && <Spinner className="ml-2 text-white" />}
-              </Button>
-            </div>
           </div>
+          <FormFooter
+            label={initialData ? "Save Changes" : "Create Project"}
+            onClose={onCancel}
+            loading={loading}
+          />
         </form>
       </Form>
     </FormProvider>
@@ -538,16 +415,10 @@ const getInitialValues = (initialData?: any) => ({
   functionality: initialData?.functionality || "",
   about: initialData?.about || "",
   description: initialData?.description || "",
-  links: initialData?.links || [
-    {
-      link: "",
-      platform: "",
-    },
-  ],
+  links: initialData?.links || [],
   technologies: initialData?.technologies.map((item: any) => item.id) || [""],
   tools: initialData?.tools.map((item: any) => item.id) || [""],
   work_types: initialData?.work_types.map((item: any) => item.id) || [""],
   platforms: initialData?.platforms.map((item: any) => item.id) || [""],
   members: initialData?.members.map((item: any) => item.id) || [""],
 });
-const platforms = ["Github", "Facebook", "Instgram", "Other"];

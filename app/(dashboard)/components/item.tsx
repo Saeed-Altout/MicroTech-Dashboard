@@ -20,10 +20,11 @@ export const Item: React.FC<ItemProps> = ({
   onClick,
 }) => {
   const currentPathname = usePathname();
+
   return (
     <Link href={href} className="w-full" onClick={onClick}>
       <Button
-        variant={currentPathname.includes(href) ? "default" : "ghost"}
+        variant={currentPathname.slice(0).includes(href) ? "default" : "ghost"}
         className="flex justify-start items-center gap-3 w-full text-sm font-medium"
       >
         <Icon className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
