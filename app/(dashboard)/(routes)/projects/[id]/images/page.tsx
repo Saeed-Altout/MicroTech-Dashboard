@@ -1,8 +1,8 @@
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 
-import { ProjectColumn } from "@/config/config";
-import { getProjectById } from "@/data/project";
+import { ProjectColumn } from "@/interface";
+import { getProjectById } from "@/data";
 import { ClientAction } from "./components/client";
 
 export default async function Images({ params }: { params: { id: any } }) {

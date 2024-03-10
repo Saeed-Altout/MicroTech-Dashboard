@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { logout } from "@/actions/logout";
+import { logout } from "@/actions";
 import { useTransition } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -21,16 +21,16 @@ export const UserButton = () => {
   const onLogout = async () => {
     startTransition(() => {
       logout().then((data) => {
-        if (data.error) {
+        if (data?.error) {
           toast.error(data.error);
         }
-        if (data.success) {
+        if (data?.success) {
           toast.success(data.success);
+          router.refresh();
         }
       });
     });
 
-    router.refresh();
   };
 
   return (

@@ -1,42 +1,40 @@
 "use server";
+
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
-export const deleteCookies = () => {
+export const Cookie = async () => {
   const cookiesList = cookies();
 
-  cookiesList.delete("name");
-  cookiesList.delete("email");
-  cookiesList.delete("refresh_token");
-  cookiesList.delete("token");
-};
+  const deleteCookies = () => {
+    cookiesList.delete("name");
+    cookiesList.delete("email");
+    cookiesList.delete("refresh_token");
+    cookiesList.delete("token");
+    return null;
+  };
 
-export const deleteCookie = (name: string) => {
-  const cookiesList = cookies();
-  cookiesList.delete(name);
-};
+  const deleteCookie = (name: string) => {
+    cookiesList.delete(name);
+    return null;
+  };
 
-export const setCookie = (name: string, value: string) => {
-  const cookiesList = cookies();
-  cookiesList.set(name, value);
-};
+  const setCookie = (name: string, value: string) => {
+    cookiesList.set(name, value);
+    return null;
+  };
 
-export const getCookie = (name: string) => {
-  const cookiesList = cookies();
-  const cookie = cookiesList.get(name);
-  return cookie;
-};
+  const getCookie = (name: string) => {
+    const cookie = cookiesList.get(name);
+    return cookie;
+  };
 
-export const hasCookie = (name: string, route?: string) => {
-  const cookiesList = cookies();
+  const hasCookie = (name: string) => {
+    const isExistingCookie = cookiesList.has(name);
+    if (!isExistingCookie) {
+      return false;
+    }
+    return true;
+  };
 
-  const isExistingCookie = cookiesList.has(name);
-
-  if (!isExistingCookie) {
-    redirect(route || "/auth/login");
-  }
-
-  const cookie = getCookie(name);
-
-  return cookie;
+  return { deleteCookies, deleteCookie, getCookie, setCookie, hasCookie };
 };

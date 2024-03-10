@@ -11,10 +11,11 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Logo } from "@/components/common/logo";
 import { CreateModalProject } from "@/components/modals/create-project-modal";
 
-import { Item } from "./item";
-import { LinksProps, RoutesProps, routes } from "@/config/config";
-
+import { LinksProps, RoutesProps } from "@/interface";
 import { useCreateProjectModal } from "@/hooks/use-create-project-modal";
+
+import { Item } from "./item";
+import { routes } from "@/config";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -65,13 +66,6 @@ export const Sidebar = () => {
             >
               <Plus className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
               Add Project
-            </Button>
-            <Button
-              variant="ghost"
-              className="flex justify-start items-center gap-3 w-full text-sm font-medium"
-            >
-              <LogOut className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
-              Logout
             </Button>
           </div>
         </ScrollArea>

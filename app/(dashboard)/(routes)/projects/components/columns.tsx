@@ -5,7 +5,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { ProjectColumn } from "@/config/config";
+import { ProjectColumn } from "@/interface";
 import { CellAction } from "./cell-action";
 
 export const columns: ColumnDef<ProjectColumn>[] = [

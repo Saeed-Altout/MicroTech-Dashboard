@@ -34,6 +34,7 @@
     "cmdk": "^0.2.0",
     "date-fns": "^3.3.1",
     "date-format": "^4.0.14",
+    "input-otp": "^1.0.1",
     "lucide-react": "^0.316.0",
     "next": "14.1.0",
     "next-cloudinary": "^5.20.0",

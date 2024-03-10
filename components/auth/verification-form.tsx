@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 
 import { codeSchema } from "@/schemas";
-import { verification } from "@/actions/verification";
+import { verification } from "@/actions";
 
 interface VerificationFormProps {
   title: string;

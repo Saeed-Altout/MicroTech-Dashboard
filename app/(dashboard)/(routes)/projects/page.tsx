@@ -7,7 +7,7 @@ import { DataTable } from "./components/data-table";
 import { Button } from "@/components/ui/button";
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
-import { getProjects } from "@/data/project";
+import { getProjects } from "@/data";
 
 export default async function ProjectsPage() {
   const data = await getProjects();

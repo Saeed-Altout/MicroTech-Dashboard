@@ -14,11 +14,13 @@ export const codeSchema = z.object({
     message: "Code Invailed",
   }),
 });
+
 export const projectFastSchema = z.object({
   title: z.string(),
   description: z.string(),
   cover: z.string(),
 });
+
 export const projectSchema = z.object({
   cover: z.string().min(1, { message: "Cover is required" }),
   logo: z.string().min(1, { message: "Logo is required" }),
@@ -65,6 +67,7 @@ export const itemSchema = z.object({
   name: z.string().min(1),
   icon: z.string().min(1),
 });
+
 export const memberSchema = z.object({
   name: z.string(),
   email: z.string().email(),

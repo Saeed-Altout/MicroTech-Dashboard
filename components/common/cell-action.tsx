@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import { EditDialog } from "@/components/ui/edit-dialog";
 import { DeleteDialog } from "@/components/ui/delete-dialog";
 
-import { Item } from "@/config/config";
-import { trash } from "@/actions/trash";
+import { Item } from "@/interface";
+import { trash } from "@/actions";
 
 export const CellAction = ({
   data,

@@ -13,7 +13,7 @@ import { Modal } from "@/components/ui/modal";
 import { FormInput } from "@/components/ui/form-input";
 import { FormFooter } from "@/components/ui/form-footer";
 
-import { create } from "@/actions/create";
+import { create } from "@/actions";
 import { memberSchema } from "@/schemas";
 import { useCreateModal } from "@/hooks/use-create-modal";
 

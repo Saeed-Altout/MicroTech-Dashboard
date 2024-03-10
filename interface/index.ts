@@ -1,15 +1,4 @@
-import {
-  Code,
-  File,
-  Folder,
-  Home,
-  LayoutDashboard,
-  LogOut,
-  LucideIcon,
-  Settings,
-  Tag,
-  Users,
-} from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 export interface Item {
   id: number | string;
@@ -19,6 +8,12 @@ export interface Item {
   updated_at: string;
   icon_url: string;
 }
+
+export interface TechnologyColumn extends Item {}
+export interface ToolColumn extends Item {}
+export interface PlatformColumn extends Item {}
+export interface WorkTypeColumn extends Item {}
+
 export interface MemberColumn {
   id: number;
   name: string;
@@ -108,10 +103,6 @@ export interface ProjectColumn {
     updated_at: string;
   }[];
 }
-export interface TechnologyColumn extends Item {}
-export interface ToolColumn extends Item {}
-export interface PlatformColumn extends Item {}
-export interface WorkTypeColumn extends Item {}
 
 export interface LinksProps {
   label: string;
@@ -124,84 +115,3 @@ export interface RoutesProps {
   icon: LucideIcon;
   links: LinksProps[];
 }
-
-export const routes: RoutesProps[] = [
-  {
-    title: "Dashboard",
-    icon: LayoutDashboard,
-    links: [
-      {
-        label: "Home",
-        href: "/",
-        pathname: "/",
-        icon: Home,
-      },
-      // {
-      //   label: "Settings",
-      //   href: "/settings",
-      //   pathname: "/settings",
-      //   icon: Settings,
-      // },
-      // {
-      //   label: "Trash",
-      //   href: "/trash",
-      //   pathname: "/trash",
-      //   icon: Trash,
-      // },
-    ],
-  },
-  {
-    title: "Mangment",
-    icon: Folder,
-    links: [
-      {
-        label: "Projects",
-        href: "/projects",
-        pathname: "/projects",
-        icon: Folder,
-      },
-      {
-        label: "Technologies",
-        href: "/technologies",
-        pathname: "/technologies",
-        icon: Code,
-      },
-      {
-        label: "Tools",
-        href: "/tools",
-        pathname: "/tools",
-        icon: Tag,
-      },
-      {
-        label: "Platforms",
-        href: "/platforms",
-        pathname: "/platforms",
-        icon: File,
-      },
-      {
-        label: "Work Types",
-        href: "/work-types",
-        pathname: "/work-types",
-        icon: Users,
-      },
-      {
-        label: "Members",
-        href: "/members",
-        pathname: "/members",
-        icon: Users,
-      },
-    ],
-  },
-  // {
-  //   title: "Others",
-  //   icon: Settings,
-  //   links: [
-  //     {
-  //       label: "Logout",
-  //       href: "/",
-  //       pathname: "/",
-  //       icon: LogOut,
-  //     },
-  //   ],
-  // },
-];

@@ -22,7 +22,7 @@ import { CardWrapper } from "@/components/auth/card-wrapper";
 import { VerificationForm } from "@/components/auth/verification-form";
 
 import { LoginSchema } from "@/schemas";
-import { login } from "@/actions/login";
+import { login } from "@/actions";
 import axios from "axios";
 import { onError } from "@/lib/error";
 

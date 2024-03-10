@@ -2,7 +2,7 @@ import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 
 import { FormProject } from "./components/form-project";
-import { getConstDataProject, getProjectById } from "@/data/project";
+import { getConstDataProject, getProjectById } from "@/data";
 
 export default async function NewProjectPage({
   params,

@@ -1,5 +1,5 @@
 import { columns } from "./components/columns";
-import { getMembers } from "@/data/member";
+import { getMembers } from "@/data";
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";

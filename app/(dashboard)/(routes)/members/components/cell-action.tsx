@@ -15,13 +15,11 @@ import { FormInput } from "@/components/ui/form-input";
 import { FormFooter } from "@/components/ui/form-footer";
 import { DeleteDialog } from "@/components/ui/delete-dialog";
 
-import { edit } from "@/actions/edit";
-import { trash } from "@/actions/trash";
-import { create } from "@/actions/create";
+import { edit, trash, create } from "@/actions";
 
 import { memberSchema } from "@/schemas";
 import { Button } from "@/components/ui/button";
-import { MemberColumn } from "@/config/config";
+import { MemberColumn } from "@/interface";
 
 export const CellAction = ({ data }: { data: MemberColumn }) => {
   const [isEdit, setIsEdit] = useState<boolean>(false);

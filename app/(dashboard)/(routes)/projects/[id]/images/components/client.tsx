@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import { ProjectColumn } from "@/config/config";
+import { Button } from "@/components/ui/button";
+import { ProjectColumn } from "@/interface";
 import { FormProjectImagesEdit } from "./form-project-images-edit";
 import { FormProjectImages } from "./form-project-images";
 import { Pencil, Plus } from "lucide-react";
@@ -17,19 +17,17 @@ export function ClientAction({ initialData }: { initialData: ProjectColumn }) {
         <div className="flex justify-start items-center gap-5">
           <Button
             variant="outline"
-            size="icon"
             onClick={() => setAction("create")}
           >
-            <span className="sr-only">Plus</span>
-            <Plus className="h-4 w-4" />
+            Add a new images
+            <Plus className="h-4 w-4 ml-2" />
           </Button>
           <Button
             variant="outline"
-            size="icon"
             onClick={() => setAction("edit")}
           >
-            <span className="sr-only">Plus</span>
-            <Pencil className="h-4 w-4" />
+            Edit images
+            <Pencil className="h-4 w-4 ml-2" />
           </Button>
         </div>
       </div>

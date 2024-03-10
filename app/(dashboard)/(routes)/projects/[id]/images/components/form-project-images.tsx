@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useTransition } from "react";
 
 import * as z from "zod";
-import axios from "axios";
 import { toast } from "sonner";
 import { ImagePlus } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -22,16 +21,16 @@ import { Input } from "@/components/ui/input";
 import { FormFooter } from "@/components/ui/form-footer";
 import { Heading } from "../../components/heading";
 
-import { onError } from "@/lib/error";
 import { imagesSchema } from "@/schemas";
-import { ProjectColumn } from "@/config/config";
+import { ProjectColumn } from "@/interface";
+import { addImagesProject } from "@/actions";
 
 export const FormProjectImages = ({
   initialData,
 }: {
   initialData: ProjectColumn;
 }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, startTransition] = useTransition();
   const [files, setFiles] = useState<File[]>([]);
   const [imagesToUpload, setImagesToUpload] = useState<
     {
@@ -98,22 +97,18 @@ export const FormProjectImages = ({
       newData.append(`images[${image.id}]`, image.file);
     });
 
-    try {
-      setLoading(true);
-      await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/project/add_images`,
-        newData
-      );
-
-      toast.success("Images Uploaded!");
-      onCancel();
-      router.refresh();
-    } catch (error) {
-      const message = onError(error);
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
+    startTransition(() => {
+      addImagesProject(newData).then((data) => {
+        if (data?.error) {
+          toast.error(data.error);
+        }
+        if (data?.success) {
+          toast.success(data.success);
+          onCancel();
+          router.refresh();
+        }
+      });
+    });
   };
 
   return (

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
 import { AlertModal } from "@/components/modals/alert-modal";
-import { ProjectColumn } from "@/config/config";
+import { ProjectColumn } from "@/interface";
 
 export const CellAction = ({ data }: { data: ProjectColumn }) => {
   const [loading, setLoading] = useState<boolean>(false);

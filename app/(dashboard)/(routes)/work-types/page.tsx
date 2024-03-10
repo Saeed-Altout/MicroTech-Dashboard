@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { DataTable } from "@/components/ui/data-table";
 import { CreateDialog } from "@/components/ui/create-dialog";
 import { ClientButton } from "@/components/common/client-button";
-import { getWorkTypes } from "@/data/worktype";
+import { getWorkTypes } from "@/data";
 
 export default async function WorkTypesPage() {
   const data = await getWorkTypes();

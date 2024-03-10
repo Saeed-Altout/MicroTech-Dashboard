@@ -1,5 +1,5 @@
 import { columns } from "./components/columns";
-import { getTechnologies } from "@/data/technology";
+import { getTechnologies } from "@/data";
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";

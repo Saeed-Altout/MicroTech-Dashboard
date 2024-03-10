@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { ToolColumn } from "@/config/config";
+import { ToolColumn } from "@/interface";
 import { CellAction } from "@/components/common/cell-action";
 
 export const columns: ColumnDef<ToolColumn>[] = [

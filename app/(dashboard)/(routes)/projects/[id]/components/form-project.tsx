@@ -27,7 +27,7 @@ import { FormFooter } from "@/components/ui/form-footer";
 
 import { Heading } from "./heading";
 import { projectSchema } from "@/schemas";
-import { ProjectColumn } from "@/config/config";
+import { ProjectColumn } from "@/interface";
 import { onError } from "@/lib/error";
 
 interface FormProjectProps {

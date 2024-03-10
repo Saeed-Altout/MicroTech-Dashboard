@@ -15,7 +15,7 @@ import { FormImage } from "@/components/ui/form-image";
 import { FormFooter } from "@/components/ui/form-footer";
 
 import { itemSchema } from "@/schemas";
-import { edit } from "@/actions/edit";
+import { edit } from "@/actions";
 import { useImageContext } from "@/contexts/image-contex";
 
 interface EditDialogProps {

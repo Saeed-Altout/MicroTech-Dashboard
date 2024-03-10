@@ -15,7 +15,7 @@ import { FormImage } from "@/components/ui/form-image";
 import { FormFooter } from "@/components/ui/form-footer";
 
 import { itemSchema } from "@/schemas";
-import { create } from "@/actions/create";
+import { create } from "@/actions";
 import { useCreateModal } from "@/hooks/use-create-modal";
 import { useImageContext } from "@/contexts/image-contex";
 

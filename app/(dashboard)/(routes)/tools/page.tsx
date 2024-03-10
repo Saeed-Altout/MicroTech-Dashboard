@@ -1,5 +1,5 @@
 import { columns } from "./components/columns";
-import { getToolsKit } from "@/data/toolkit";
+import { getToolsKit } from "@/data";
 
 import { Heading } from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
