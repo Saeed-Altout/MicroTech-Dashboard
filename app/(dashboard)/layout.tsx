@@ -15,7 +15,7 @@ export default function DashboardLayout({
         <Sidebar />
         <div className="grow flex-1 flex flex-col transition-all">
           <Navbar />
-          <div className="flex flex-wrap flex-1 grow transition-all h-[calc(100vh-64px)]">
+          <main className="flex flex-1 transition-all h-[calc(100vh-64px)]">
             <ScrollArea className="w-full h-full">
               <div className="px-4 py-6 relative">
                 <div className="w-[calc(100vw-32px)] md:w-[calc(100vw-272px)] space-y-6">
@@ -23,7 +23,7 @@ export default function DashboardLayout({
                 </div>
               </div>
             </ScrollArea>
-          </div>
+          </main>
         </div>
       </ImageContext>
     </div>

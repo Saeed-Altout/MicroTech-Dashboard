@@ -1,7 +1,8 @@
 "use client";
 
 import { Key, useState } from "react";
-import { LogOut, Menu, Plus } from "lucide-react";
+import { LogOut, LucideIcon, Menu, Plus } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -14,8 +15,8 @@ import { CreateModalProject } from "@/components/modals/create-project-modal";
 import { LinksProps, RoutesProps } from "@/interface";
 import { useCreateProjectModal } from "@/hooks/use-create-project-modal";
 
-import { Item } from "./item";
 import { routes } from "@/config";
+import Link from "next/link";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -134,5 +135,33 @@ export const Sidebar = () => {
         </Button>
       </div>
     </>
+  );
+};
+
+interface ItemProps {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  onClick?: () => void;
+}
+
+export const Item: React.FC<ItemProps> = ({
+  label,
+  href,
+  icon: Icon,
+  onClick,
+}) => {
+  const currentPathname = usePathname();
+
+  return (
+    <Link href={href} className="w-full" onClick={onClick}>
+      <Button
+        variant="ghost"
+        className="flex justify-start items-center gap-3 w-full text-sm font-medium"
+      >
+        <Icon className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
+        {label}
+      </Button>
+    </Link>
   );
 };

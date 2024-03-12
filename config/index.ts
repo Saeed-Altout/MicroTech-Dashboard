@@ -15,9 +15,9 @@ export const routes: RoutesProps[] = [
     icon: LayoutDashboard,
     links: [
       {
-        label: "Overview",
-        href: "/overview",
-        pathname: "/overview",
+        label: "Home",
+        href: "/",
+        pathname: "/",
         icon: LayoutDashboard,
       },
     ],
