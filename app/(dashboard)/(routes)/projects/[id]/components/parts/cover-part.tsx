@@ -9,7 +9,6 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { FormInput } from "@/components/ui/form-input";
 import { useFormContext } from "react-hook-form";
 import { ChangeEvent, useState } from "react";
 
