@@ -1,15 +1,13 @@
 "use client";
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
-
 import * as z from "zod";
-import axios from "axios";
+import Image from "next/image";
 import { toast } from "sonner";
 import { ImagePlus } from "lucide-react";
-import { useForm, FormProvider, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ChangeEvent, useState } from "react";
 
 import {
   Form,
@@ -18,30 +16,63 @@ import {
   FormItem,
   FormLabel,
 } from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { FormInput } from "@/components/ui/form-input";
-import { FormSelect } from "@/components/ui/form-select";
-import { FormPopover } from "@/components/ui/form-popover";
-import { FormFooter } from "@/components/ui/form-footer";
+import { Spinner } from "@/components/ui/spinner";
 
-import { Heading } from "./heading";
-import { projectSchema } from "@/schemas";
-import { ProjectColumn } from "@/interface";
+import { MainPart } from "./parts/main-part";
+import { CheckPart } from "./parts/check-part";
+import { LinksPart } from "./parts/links-part";
+import { SelectPart } from "./parts/select-part";
+import { AdvantagesPart } from "./parts/advantages-part";
+
+import axios, { AxiosRequestConfig } from "axios";
 import { onError } from "@/lib/error";
 
+const formSchema = z.object({
+  cover: z.string(),
+  logo: z.string(),
+  title: z.string(),
+  functionality: z.string(),
+  about: z.string(),
+  description: z.string(),
+  advantages: z.array(
+    z.object({
+      value: z.string(),
+    })
+  ),
+  links: z.array(
+    z.object({
+      link: z.string(),
+      platform: z.string(),
+    })
+  ),
+  isSpecial: z.boolean(),
+  isActive: z.boolean(),
+  technologies: z.array(z.number()),
+  tools: z.array(z.number()),
+  work_types: z.array(z.number()),
+  platforms: z.array(z.number()),
+  members: z.array(z.number()),
+});
+
 interface FormProjectProps {
-  initialData: ProjectColumn;
-  constant: any;
+  initialData: any;
+  constantData: any;
 }
 
-export const FormProject = ({ initialData, constant }: FormProjectProps) => {
-  const [filesCover, setFilesCover] = useState<File[]>([]);
-  const [filesLogo, setFilesLogo] = useState<File[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+export const FormProject = ({
+  initialData,
+  constantData,
+}: FormProjectProps) => {
   const router = useRouter();
-
-  const platforms = ["Github", "Facebook", "Instgram", "Other"];
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [files, setFiles] = useState<
+    {
+      name: string;
+      file: File[];
+    }[]
+  >([]);
 
   let advantagesInitalValue: {
     value: string;
@@ -55,95 +86,81 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
     );
   }
 
-  const form = useForm<z.infer<typeof projectSchema>>({
-    resolver: zodResolver(projectSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       ...getInitialValues(initialData),
       advantages: advantagesInitalValue || [],
+      isSpecial: false,
+      isActive: false,
     },
   });
 
-  const handleImageCover = (
+  const handleImage = (
     e: ChangeEvent<HTMLInputElement>,
-    fieldChange: (value: string) => void
-  ) => {
-    e.preventDefault();
-    const fileReader = new FileReader();
-
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFilesCover(Array.from(e.target.files));
-
-      if (!file.type.includes("image")) return;
-
-      fileReader.onload = async (event) => {
-        const imageDataUrl = event.target?.result?.toString() || "";
-        fieldChange(imageDataUrl);
-      };
-
-      fileReader.readAsDataURL(file);
-    }
-  };
-  const handleImageLogo = (
-    e: ChangeEvent<HTMLInputElement>,
-    fieldChange: (value: string) => void
+    fieldChange: (value: string) => void,
+    name: string
   ) => {
     e.preventDefault();
     e.stopPropagation();
     const fileReader = new FileReader();
-
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      setFilesLogo(Array.from(e.target.files));
+
+      setFiles((prevFiles) => [
+        ...prevFiles,
+        {
+          name: name,
+          file: Array.from(e.target.files || []),
+        },
+      ]);
 
       if (!file.type.includes("image")) return;
-
-      fileReader.onload = async (event) => {
-        const imageDataUrl = event.target?.result?.toString() || "";
+      fileReader.onload = () => {
+        const imageDataUrl = fileReader.result?.toString() || "";
         fieldChange(imageDataUrl);
       };
-
       fileReader.readAsDataURL(file);
     }
   };
 
-  const {
-    fields: advantagesFields,
-    append: appendAdvantage,
-    remove: removeAdvantage,
-  } = useFieldArray({
-    name: "advantages",
-    control: form.control,
-  });
+  const filterImage = (name: "cover" | "logo", images: any[]) => {
+    if (images.length < 1) {
+      return undefined;
+    }
+    const imagesOfFiles = images.filter(
+      (image) => image.name === name && image.file
+    );
 
-  const {
-    fields: linksFields,
-    append: appendLink,
-    remove: removeLink,
-  } = useFieldArray({
-    name: "links",
-    control: form.control,
-  });
+    return imagesOfFiles[0]?.file[0];
+  };
 
   const onCancel = () => {
     form.reset();
-    setFilesCover([]);
-    setFilesLogo([]);
     router.push("/projects");
+    router.refresh();
   };
 
-  const onSubmit = async (values: z.infer<typeof projectSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     let data = new FormData();
     let advantages: string[] = [];
     values.advantages.forEach((advantage) => advantages.push(advantage.value));
+    const token = window.localStorage.getItem("next__%&$");
+    const config: AxiosRequestConfig = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    if (initialData) {
+      !initialData?.logo_url && data.append("logo", filterImage("logo", files));
+      !initialData?.cover_url &&
+        data.append("cover", filterImage("cover", files));
 
-    try {
-      setLoading(true);
-      if (initialData) {
-        filesLogo[0] !== undefined && data.append("logo", filesLogo[0]);
-        filesCover[0] !== undefined && data.append("cover", filesCover[0]);
+      try {
+        setIsLoading(true);
         await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/project/edit`,
+          `${process.env.NEXT_PUBLIC_EDIT_PROJECT}`,
           {
             id: initialData.id,
             cover: data.get("cover"),
@@ -160,18 +177,23 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
             member_ids: values.members,
             work_type_ids: values.work_types,
           },
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          config
         );
-        toast.success(`${initialData?.title} edited!`);
-      } else {
-        data.append("logo", filesLogo[0]);
-        data.append("cover", filesCover[0]);
+        toast.success("Project edited.");
+        onCancel();
+      } catch (error) {
+        const message = onError(error);
+        toast.error(message);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      data.append("cover", filterImage("cover", files));
+      data.append("logo", filterImage("logo", files));
+      try {
+        setIsLoading(true);
         await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/project/create`,
+          `${process.env.NEXT_PUBLIC_CREATE_PROJECT}`,
           {
             cover: data.get("cover"),
             logo: data.get("logo"),
@@ -187,224 +209,123 @@ export const FormProject = ({ initialData, constant }: FormProjectProps) => {
             member_ids: values.members,
             work_type_ids: values.work_types,
           },
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
+          config
         );
-        toast.success("New project created!");
+        toast.success("Project created.");
+        onCancel();
+      } catch (error) {
+        const message = onError(error);
+        toast.error(message);
+      } finally {
+        setIsLoading(false);
       }
-
-      onCancel();
-      router.refresh();
-    } catch (error) {
-      const message = onError(error);
-      toast.error(message);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <FormProvider {...form}>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-y-6 max-w-7xl mx-auto"
-        >
-          <div className="relative h-[400px] lg:h-[500px] w-full overflow-hidden col-span-1 md:col-span-2">
-            <FormField
-              control={form.control}
-              name="cover"
-              render={({ field }) => (
-                <FormItem className="relative">
-                  <FormLabel className="cursor-pointer h-[400px] lg:h-[500px] w-full border-dashed border rounded-md flex justify-center items-center overflow-hidden">
-                    {field.value ? (
-                      <div className="h-full w-full overflow-hidden">
-                        <Image
-                          src={field.value}
-                          alt="Cover"
-                          width={1000}
-                          height={1000}
-                          loading="eager"
-                          className="object-cover"
-                          style={{ width: "100%", height: "auto" }}
-                          onError={(e: any) => {
-                            e.target.src = "./logo-icon.svg";
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <ImagePlus strokeWidth={0.2} className="w-20 h-20" />
-                    )}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="w-full h-[250px] hidden"
-                      type="file"
-                      disabled={loading}
-                      accept="image/*"
-                      onChange={(e) => handleImageCover(e, field.onChange)}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="logo"
-              render={({ field }) => (
-                <FormItem className="absolute w-24 h-24 bottom-4 left-4 bg-transparent rounded-md">
-                  <FormLabel className="bg-background cursor-pointer h-full flex justify-center items-center gap-3 border-dashed border rounded-md overflow-hidden py-3">
-                    {field.value ? (
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-5 max-w-4xl mx-auto"
+      >
+        <div className="relative h-[400px] lg:h-[500px] w-full overflow-hidden col-span-1 md:col-span-2">
+          <FormField
+            control={form.control}
+            name="cover"
+            render={({ field }) => (
+              <FormItem className="relative">
+                <FormLabel className="cursor-pointer h-[400px] lg:h-[500px] w-full border-dashed border rounded-md flex justify-center items-center overflow-hidden">
+                  {field.value ? (
+                    <div className="h-full w-full overflow-hidden">
                       <Image
                         src={field.value}
-                        alt="Logo"
+                        alt="Cover"
+                        width={1000}
+                        height={1000}
                         loading="eager"
-                        fill
-                        className="object-contain max-w-16 max-h-16 m-auto"
+                        className="object-cover"
+                        style={{ width: "100%", height: "auto" }}
                         onError={(e: any) => {
-                          e.target.src = "./logo-icon-dark.svg";
+                          e.target.src = "./logo-icon.svg";
                         }}
                       />
-                    ) : (
-                      <div className="flex flex-col justify-center items-center text-center gap-y-2 text-xs">
-                        <ImagePlus strokeWidth={0.5} className="w-5 h-5" />
-                        <p className="text-muted-foreground">Upload Logo</p>
-                      </div>
-                    )}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      disabled={loading}
-                      className="hidden"
-                      onChange={(e) => handleImageLogo(e, field.onChange)}
+                    </div>
+                  ) : (
+                    <ImagePlus strokeWidth={0.2} className="w-20 h-20" />
+                  )}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="w-full h-[250px] hidden"
+                    type="file"
+                    // disabled={loading}
+                    accept="image/*"
+                    onChange={(e) => handleImage(e, field.onChange, "cover")}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="logo"
+            render={({ field }) => (
+              <FormItem className="absolute w-24 h-24 bottom-4 left-4 bg-transparent rounded-md">
+                <FormLabel className="bg-background cursor-pointer h-full flex justify-center items-center gap-3 border-dashed border rounded-md overflow-hidden py-3">
+                  {field.value ? (
+                    <Image
+                      src={field.value}
+                      alt="Logo"
+                      loading="eager"
+                      fill
+                      className="object-contain max-w-16 max-h-16 m-auto"
+                      onError={(e: any) => {
+                        e.target.src = "./logo-icon-dark.svg";
+                      }}
                     />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormInput
-            name="title"
-            label="Title"
-            placeholder="title"
-            loading={loading}
-          />
-          <FormInput
-            name="functionality"
-            label="Functionality"
-            placeholder="functionality"
-            loading={loading}
-          />
-          <FormInput
-            name="about"
-            label="About"
-            placeholder="about"
-            loading={loading}
-            textarea
-          />
-          <FormInput
-            name="description"
-            label="Description"
-            placeholder="description"
-            loading={loading}
-            textarea
-          />
-          <Separator />
-          <div className="space-y-5">
-            <Heading
-              label="Advantages:"
-              onRemove={() => removeAdvantage(advantagesFields.length - 1)}
-              onAppend={() => appendAdvantage({ value: "" })}
-            />
-
-            <div className="grid grid-flow-row grid-cols-1 md:grid-cols-2 items-start gap-6">
-              {advantagesFields.map((field, index) => (
-                <FormInput
-                  key={index}
-                  name={`advantages.${index}.value`}
-                  placeholder="advantage"
-                  loading={loading}
-                />
-              ))}
-            </div>
-          </div>
-          <Separator />
-          <div className="space-y-5">
-            <Heading
-              label="Links:"
-              onRemove={() => removeLink(linksFields.length - 1)}
-              onAppend={() => appendLink({ platform: "", link: "" })}
-            />
-
-            <div className="grid grid-flow-row grid-cols-1 lg:grid-cols-2 items-start gap-6">
-              {linksFields.map((field, index) => (
-                <div key={index} className="flex gap-5">
-                  <FormSelect
-                    name={`links.${index}.link`}
-                    placeholder="Select"
-                    loading={loading}
-                    items={platforms}
+                  ) : (
+                    <div className="flex flex-col justify-center items-center text-center gap-y-2 text-xs">
+                      <ImagePlus strokeWidth={0.5} className="w-5 h-5" />
+                      <p className="text-muted-foreground">Upload Logo</p>
+                    </div>
+                  )}
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    // disabled={loading}
+                    className="hidden"
+                    onChange={(e) => handleImage(e, field.onChange, "logo")}
                   />
-                  <FormInput
-                    name={`links.${index}.platform`}
-                    placeholder="url"
-                    loading={loading}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-          <Separator />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            <FormPopover
-              items={constant.technologies}
-              name="technologies"
-              heading="Technologies"
-              href="/technologies"
-              label="Create Technology"
-            />
-            <FormPopover
-              items={constant.toolsKit}
-              name="tools"
-              heading="Tools-Kit"
-              href="/tools"
-              label="Create Tool-kit"
-            />
-            <FormPopover
-              items={constant.members}
-              name="members"
-              heading="Members"
-              href="/members"
-              label="Create Member"
-            />
-            <FormPopover
-              items={constant.platforms}
-              name="platforms"
-              heading="Platforms"
-              href="/platforms"
-              label="Create Platform"
-            />
-            <FormPopover
-              items={constant.workTypes}
-              name="work_types"
-              heading="Work Types"
-              href="/work_types"
-              label="Create Work Type"
-            />
-          </div>
-          <FormFooter
-            label={initialData ? "Save Changes" : "Create Project"}
-            onClose={onCancel}
-            loading={loading}
+                </FormControl>
+              </FormItem>
+            )}
           />
-        </form>
-      </Form>
-    </FormProvider>
+        </div>
+        <MainPart />
+        <AdvantagesPart />
+        <LinksPart />
+        <SelectPart constantData={constantData} />
+        {/* <CheckPart /> */}
+        <div className="pt-5 flex items-center justify-end gap-4 w-full">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button disabled={isLoading} type="submit">
+            {initialData ? "Save changes" : "Create"}
+            {isLoading && (
+              <Spinner className="ml-2 text-white dark:text-primary" />
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 };
 

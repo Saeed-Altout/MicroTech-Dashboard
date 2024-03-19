@@ -1,27 +1,21 @@
-import { columns } from "./components/columns";
-
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/ui/data-table";
-import { CreateDialog } from "@/components/ui/create-dialog";
-import { ClientButton } from "@/components/common/client-button";
+import { WorkTypesClient } from "./components/client";
+import { WorkTypesColumn } from "./components/columns";
 import { getWorkTypes } from "@/data";
 
 export default async function WorkTypesPage() {
-  const data = await getWorkTypes();
+  const workTypes = await getWorkTypes();
+
+  const formattedWorkTypes: WorkTypesColumn[] = workTypes.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    icon: item.icon_url,
+  }));
 
   return (
-    <>
-      <CreateDialog
-        title="Create Work Type"
-        description="Add New Work Type"
-        endpoint="work_types"
-      />
-      <Heading title="Work Types" description="Welcome in work types page.">
-        <ClientButton />
-      </Heading>
-      <Separator />
-      <DataTable columns={columns} searchKey="name" data={data} />
-    </>
+    <div className="flex-col">
+      <div className="flex-1 space-y-5">
+        <WorkTypesClient initialData={formattedWorkTypes} />
+      </div>
+    </div>
   );
 }

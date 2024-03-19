@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Key, useState } from "react";
 import { LogOut, LucideIcon, Menu, Plus } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -9,18 +10,14 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
-import { Logo } from "@/components/common/logo";
-import { CreateModalProject } from "@/components/modals/create-project-modal";
+import { Logo } from "@/components/logo";
 
-import { LinksProps, RoutesProps } from "@/interface";
-import { useCreateProjectModal } from "@/hooks/use-create-project-modal";
-
-import { routes } from "@/config";
-import Link from "next/link";
+import { LinksProps, RoutesProps, routes } from "@/config";
+import { useCreateModal } from "@/hooks/use-create-modal";
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const createProjectModal = useCreateProjectModal();
+  const createModal = useCreateModal();
 
   const onChange = (open: boolean) => {
     if (!open) {
@@ -30,11 +27,6 @@ export const Sidebar = () => {
 
   return (
     <>
-      <CreateModalProject
-        title="Create Project"
-        description="add a new project"
-      />
-
       <aside className="w-60 hidden md:flex flex-col border-r">
         <div className="h-16 flex justify-center items-center">
           <Logo />
@@ -63,7 +55,7 @@ export const Sidebar = () => {
             <Button
               variant="ghost"
               className="flex justify-start items-center gap-3 w-full text-sm font-medium"
-              onClick={() => createProjectModal.onOpen()}
+              onClick={() => createModal.onOpen()}
             >
               <Plus className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
               Add Project
@@ -107,7 +99,7 @@ export const Sidebar = () => {
                 <Button
                   variant="ghost"
                   className="flex justify-start items-center gap-3 w-full text-sm font-medium"
-                  onClick={() => createProjectModal.onOpen()}
+                  onClick={() => createModal.onOpen()}
                 >
                   <Plus className="h-4 w-4 mr-2 md:mr-0 lg:mr-2" />
                   Add Project

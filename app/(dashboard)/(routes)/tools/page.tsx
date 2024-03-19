@@ -1,27 +1,21 @@
-import { columns } from "./components/columns";
+import { ToolKitClient } from "./components/client";
+import { ToolKitColumn } from "./components/columns";
 import { getToolsKit } from "@/data";
 
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/ui/data-table";
-import { CreateDialog } from "@/components/ui/create-dialog";
-import { ClientButton } from "@/components/common/client-button";
+export default async function ToolKitPage() {
+  const toolsKit = await getToolsKit();
 
-export default async function Technologies() {
-  const data = await getToolsKit();
+  const formattedToolsKit: ToolKitColumn[] = toolsKit.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    icon: item.icon_url,
+  }));
 
   return (
-    <>
-      <CreateDialog
-        title="Create Tool-kit"
-        description="Add New Tool-kit"
-        endpoint="tool"
-      />
-      <Heading title="Tools-kit" description="Welcome in tools-kit page.">
-        <ClientButton />
-      </Heading>
-      <Separator />
-      <DataTable columns={columns} searchKey="name" data={data} />
-    </>
+    <div className="flex-col">
+      <div className="flex-1 space-y-5">
+        <ToolKitClient initialData={formattedToolsKit} />
+      </div>
+    </div>
   );
 }

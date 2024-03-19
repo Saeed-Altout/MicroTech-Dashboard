@@ -1,27 +1,23 @@
-import { columns } from "./components/columns";
+import { TechnologyClient } from "./components/client";
+import { TechnologyColumn } from "./components/columns";
 import { getTechnologies } from "@/data";
 
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/ui/data-table";
-import { CreateDialog } from "@/components/ui/create-dialog";
-import { ClientButton } from "@/components/common/client-button";
+export default async function TechnologiesPage() {
+  const technologies = await getTechnologies();
 
-export default async function Technologies() {
-  const data = await getTechnologies();
+  const formattedTechnologies: TechnologyColumn[] = technologies.map(
+    (item: any) => ({
+      id: item.id,
+      name: item.name,
+      icon: item.icon_url,
+    })
+  );
 
   return (
-    <>
-      <CreateDialog
-        title="Create Technology"
-        description="Add New Technology"
-        endpoint="technology"
-      />
-      <Heading title="Technologies" description="Welcome in technologies page.">
-        <ClientButton />
-      </Heading>
-      <Separator />
-      <DataTable columns={columns} searchKey="name" data={data} />
-    </>
+    <div className="flex-col">
+      <div className="flex-1 space-y-5">
+        <TechnologyClient initialData={formattedTechnologies} />
+      </div>
+    </div>
   );
 }

@@ -3,10 +3,17 @@
 import { toast } from "sonner";
 import { useState, useTransition } from "react";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -18,18 +25,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { CardWrapper } from "@/components/auth/card-wrapper";
 import { VerificationForm } from "@/components/auth/verification-form";
 
 import { LoginSchema } from "@/schemas";
-import { login } from "@/actions";
-import axios from "axios";
-import { onError } from "@/lib/error";
+import { login } from "@/actions/login";
 
 export const LoginForm = () => {
-  const [open, setOpen] = useState<boolean>(false);
-  const [username, setUsername] = useState<string>("");
-  const [isPending, startTransition] = useTransition();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLoading, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -40,22 +43,17 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-    try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/"auth/send_code"`,
-        {
-          user_name: values.username,
-          password: values.password,
+    startTransition(() => {
+      login(values).then((data) => {
+        if (data?.error) {
+          toast.error(data?.error);
         }
-      );
-      console.log(res);
-
-      return {
-        success: "Success, check your email. we had sent code for you.",
-      };
-    } catch (error) {
-      onError(error);
-    }
+        if (data?.success) {
+          toast.success(data?.success);
+          setIsOpen(true);
+        }
+      });
+    });
   };
 
   return (
@@ -63,67 +61,71 @@ export const LoginForm = () => {
       <VerificationForm
         title="Do you have code."
         description="Please, check your email."
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        username={username}
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
       />
-      <CardWrapper
-        title="Login"
-        description="Sign in to Dashboard 😉 & Enjoy. "
-        labelBackButton="Dashboard"
-        hrefBackButton="/"
-      >
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isPending}
-                      placeholder="username"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled={isPending}
-                      type="password"
-                      placeholder="******"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="button"
-              variant="link"
-              size="sm"
-              onClick={() => setOpen(true)}
-            >
-              Do you have a code?
-            </Button>
-            <Button disabled={isPending} type="submit" className="w-full">
-              Login {isPending && <Spinner className="ml-2" />}
-            </Button>
-          </form>
-        </Form>
-      </CardWrapper>
+
+      <Card className="max-w-sm w-full">
+        <CardHeader className="text-center">
+          <CardTitle>Login 🔐</CardTitle>
+          <CardDescription>Sign in to Dashboard & Enjoy. </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isLoading}
+                        placeholder="username"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        disabled={isLoading}
+                        type="password"
+                        placeholder="******"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
+                onClick={() => setIsOpen(true)}
+              >
+                Do you have a code?
+              </Button>
+              <Button disabled={isLoading} type="submit" className="w-full">
+                Login{" "}
+                {isLoading && (
+                  <Spinner className="ml-2 dark:text-primary-foreground" />
+                )}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </>
   );
 };

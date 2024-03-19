@@ -1,12 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { Cookie } from "@/lib/cookie";
+import { cookies } from "next/headers";
 
 export const Axios = async () => {
-  const { getCookie } = await Cookie();
-
-  const token = getCookie("token");
-  // TODO: check token
-
+  const cookiesList = cookies();
+  const token = cookiesList.get("next__token");
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
   const config: AxiosRequestConfig = {
     headers: {

@@ -4,11 +4,22 @@ import {
   Folder,
   Layers,
   LayoutDashboard,
+  LucideIcon,
+  Settings,
   Tag,
   Users,
 } from "lucide-react";
-import { RoutesProps } from "@/interface";
-
+export interface LinksProps {
+  label: string;
+  href: string;
+  pathname: string;
+  icon: LucideIcon;
+}
+export interface RoutesProps {
+  title: string;
+  icon: LucideIcon;
+  links: LinksProps[];
+}
 export const routes: RoutesProps[] = [
   {
     title: "Dashboard",
@@ -19,6 +30,12 @@ export const routes: RoutesProps[] = [
         href: "/",
         pathname: "/",
         icon: LayoutDashboard,
+      },
+      {
+        label: "Settings",
+        href: "/settings",
+        pathname: "/settings",
+        icon: Settings,
       },
     ],
   },

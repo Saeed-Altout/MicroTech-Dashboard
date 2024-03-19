@@ -1,16 +1,94 @@
 "use client";
 
 import Image from "next/image";
-
-import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
-
-import { ProjectColumn } from "@/interface";
 import { CellAction } from "./cell-action";
+
+export interface ProjectColumn {
+  id: string;
+  title: string;
+  description: string;
+  functionality: string;
+  about: string;
+  likes: number;
+  category: string;
+  advantages: string[];
+  links: {
+    link: string;
+    platform: string;
+  }[];
+  active: number | string;
+  created_at: string;
+  updated_at: string;
+  cover_url: string;
+  logo_url: string;
+  images_hero: string[];
+  features: {
+    id: number | string;
+    title: string;
+    description: string;
+    project_id: number | string;
+    created_at: string;
+    updated_at: string;
+    images: {
+      id: number | string;
+      created_at: string;
+      updated_at: string;
+      image_url: string;
+    }[];
+  }[];
+  images: {
+    id: number | string;
+    created_at: string;
+    updated_at: string;
+    image_url: string;
+  }[];
+  technologies: {
+    id: number | string;
+    name: string;
+    number_project: number | string;
+    created_at: string;
+    updated_at: string;
+    icon_url: string;
+  }[];
+  tools: {
+    id: number | string;
+    name: string;
+    number_project: number | string;
+    created_at: string;
+    updated_at: string;
+    icon_url: string;
+  }[];
+  work_types: {
+    id: number | string;
+    name: string;
+    number_project: number | string;
+    created_at: string;
+    updated_at: string;
+    icon_url: string;
+  }[];
+  platforms: {
+    id: number | string;
+    name: string;
+    number_project: number | string;
+    created_at: string;
+    updated_at: string;
+    icon_url: string;
+  }[];
+  members: {
+    id: number | string;
+    name: string;
+    email: string;
+    phone: string;
+    number_project: number | string;
+    created_at: string;
+    updated_at: string;
+  }[];
+}
 
 export const columns: ColumnDef<ProjectColumn>[] = [
   {
-    accessorKey: "logo_url",
+    accessorKey: "logoUrl",
     header: "Logo",
     cell: ({ row }) => {
       return (
@@ -33,7 +111,7 @@ export const columns: ColumnDef<ProjectColumn>[] = [
   },
   {
     accessorKey: "title",
-    header: "Name",
+    header: "Title",
     cell: ({ row }) => (
       <p className="truncate whitespace-nowrap">{row.original.title}</p>
     ),
@@ -107,16 +185,7 @@ export const columns: ColumnDef<ProjectColumn>[] = [
     ),
   },
   {
-    accessorKey: "created_at",
-    header: "Date",
-    cell: ({ row }) => (
-      <p className="whitespace-nowrap truncate">
-        {format(row.original.created_at, "yyyy-MM-dd")}
-      </p>
-    ),
-  },
-  {
     id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => <CellAction initialData={row.original} />,
   },
 ];

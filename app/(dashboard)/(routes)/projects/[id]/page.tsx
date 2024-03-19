@@ -1,25 +1,19 @@
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-
-import { FormProject } from "./components/form-project";
-import { getConstDataProject, getProjectById } from "@/data";
+import { ProjectClient } from "./components/client";
+import { getProjectById } from "@/data";
 
 export default async function NewProjectPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const constData = await getConstDataProject();
-  const initialData = await getProjectById(params.id);
-
-  const title = initialData ? "Edit project" : "Create Project";
-  const description = initialData ? "Edit your project" : "Add New Project.";
+  const project = await getProjectById(params.id);
+  console.log(project);
 
   return (
-    <>
-      <Heading title={title} description={description} />
-      <Separator />
-      <FormProject initialData={initialData} constant={constData} />
-    </>
+    <div className="flex-col">
+      <div className="flex-1 space-y-5">
+        <ProjectClient initialData={project} />
+      </div>
+    </div>
   );
 }

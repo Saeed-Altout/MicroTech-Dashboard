@@ -1,23 +1,22 @@
-import { columns } from "./components/columns";
+import { MemberClient } from "./components/client";
+import { MemberColumn } from "./components/columns";
 import { getMembers } from "@/data";
 
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
-import { DataTable } from "@/components/ui/data-table";
-import { ClientButton } from "@/components/common/client-button";
-import { CreateMemberDialog } from "@/components/ui/create-member-dialog";
-
 export default async function MembersPage() {
-  const data = await getMembers();
+  const members = await getMembers();
+
+  const formattedMember: MemberColumn[] = members.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    email: item.email,
+    phone: item.phone,
+  }));
 
   return (
-    <>
-      <CreateMemberDialog />
-      <Heading title="Members" description="Welcome in members page.">
-        <ClientButton />
-      </Heading>
-      <Separator />
-      <DataTable columns={columns} searchKey="name" data={data} />
-    </>
+    <div className="flex-col">
+      <div className="flex-1 space-y-5">
+        <MemberClient initialData={formattedMember} />
+      </div>
+    </div>
   );
 }

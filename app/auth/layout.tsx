@@ -1,4 +1,4 @@
-import { Logo } from "@/components/common/logo";
+import { Logo } from "@/components/logo";
 
 export default async function AuthLayout({
   children,
@@ -7,8 +7,7 @@ export default async function AuthLayout({
 }>) {
   return (
     <div className="h-full flex justify-center items-center">
-      <Logo className="fixed top-2 left-8" />
-
+      <Logo className="fixed top-0 left-8" />
       {children}
     </div>
   );

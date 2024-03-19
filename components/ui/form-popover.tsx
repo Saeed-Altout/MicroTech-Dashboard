@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Key } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ChevronDown, PlusCircle } from "lucide-react";
 
@@ -73,71 +73,71 @@ export const FormPopover = ({
   }, [getValues, name]);
 
   return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                aria-label="Select a item"
-                className={cn("w-full justify-between", className)}
-              >
-                Select {heading}
-                <ChevronDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0 ">
-              <Command className="w-full">
-                <CommandList>
-                  <CommandInput placeholder="Search item..." />
-                  <CommandEmpty>No item found.</CommandEmpty>
-                  <CommandGroup heading={heading}>
-                    {formattedItems.map((item) => (
-                      <CommandItem
-                        key={item.value}
-                        className="text-sm"
-                        onSelect={() =>
-                          handleSelect(+item.value, field.onChange)
-                        }
-                      >
-                        {selected?.map((current, index) => (
-                          <span key={index}>
-                            {+current === +item.value && (
-                              <Check className="mr-2 h-4 w-4" />
-                            )}
-                          </span>
-                        ))}
-                        {item.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-                <CommandSeparator />
-                <CommandList>
-                  <CommandGroup>
-                    <CommandItem
-                      onSelect={() => {
-                        setOpen(false);
-                        router.push(href);
-                      }}
-                      className="cursor-pointer"
-                    >
-                      <PlusCircle className="mr-2 h-5 w-5" />
-                      {label}
-                    </CommandItem>
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+    <>
+      <FormField
+        control={control}
+        name={name}
+        render={({ field }) => (
+          <FormItem className="w-full">
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={open}
+                  aria-label="Select a item"
+                  className={cn("w-full justify-between", className)}
+                >
+                  Select {heading}
+                  <ChevronDown className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="p-0 ">
+                <Command className="w-full">
+                  <CommandList>
+                    <CommandInput placeholder="Search item..." />
+                    <CommandEmpty>No item found.</CommandEmpty>
+                    <CommandGroup heading={heading}>
+                      {formattedItems.map((item) => (
+                        <CommandItem
+                          key={item.value}
+                          className="text-sm"
+                          onSelect={() =>
+                            handleSelect(+item.value, field.onChange)
+                          }
+                        >
+                          {selected?.map((current, index) => (
+                            <span key={index}>
+                              {+current === +item.value && (
+                                <Check className="mr-2 h-4 w-4" />
+                              )}
+                            </span>
+                          ))}
+                          {item.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            <FormMessage />
+            <div className="min-h-5 w-full rounded-md flex flex-wrap items-center justify-start gap-2">
+              {formattedItems.map((item) =>
+                field.value.map((selected: number, index: Key) => (
+                  <>
+                    {selected === item.value && (
+                      <p key={index} className="text-sm text-muted-foreground">
+                        {index !== 0 && " | "} {item.label}
+                      </p>
+                    )}
+                  </>
+                ))
+              )}
+            </div>
+          </FormItem>
+        )}
+      />
+    </>
   );
 };

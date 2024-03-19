@@ -1,29 +1,14 @@
-import Link from "next/link";
-import { Plus } from "lucide-react";
-
-import { columns } from "./components/columns";
-import { DataTable } from "./components/data-table";
-
-import { Button } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Separator } from "@/components/ui/separator";
+import { ProjectsClient } from "./components/client";
 import { getProjects } from "@/data";
 
 export default async function ProjectsPage() {
-  const data = await getProjects();
+  const projects = await getProjects();
 
   return (
-    <>
-      <Heading title="Projects" description="Welcome in projects page.">
-        <Link href="/projects/new">
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            Add New
-          </Button>
-        </Link>
-      </Heading>
-      <Separator />
-      <DataTable columns={columns} data={data} searchKey="title" />
-    </>
+    <div className="flex-col">
+      <div className="flex-1 space-y-5">
+        <ProjectsClient initialData={projects} />
+      </div>
+    </div>
   );
 }

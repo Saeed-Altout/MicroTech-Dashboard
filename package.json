@@ -1,5 +1,5 @@
 {
-  "name": "microtech",
+  "name": "microtech-dashboard",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -29,14 +29,16 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@tanstack/react-table": "^8.11.7",
     "axios": "^1.6.7",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.0",
     "date-fns": "^3.3.1",
     "date-format": "^4.0.14",
-    "input-otp": "^1.0.1",
+    "input-otp": "^1.1.0",
     "lucide-react": "^0.316.0",
     "next": "14.1.0",
+    "next-auth": "^5.0.0-beta.15",
     "next-cloudinary": "^5.20.0",
     "next-themes": "^0.2.1",
     "react": "^18",
@@ -53,9 +55,11 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.0",

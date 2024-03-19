@@ -2,11 +2,15 @@
 
 import Image from "next/image";
 import { ColumnDef } from "@tanstack/react-table";
+import { CellAction } from "./cell-action";
 
-import { ToolColumn } from "@/interface";
-import { CellAction } from "@/components/common/cell-action";
+export interface ToolKitColumn {
+  id: string;
+  name: string;
+  icon: string;
+}
 
-export const columns: ColumnDef<ToolColumn>[] = [
+export const columns: ColumnDef<ToolKitColumn>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -15,12 +19,12 @@ export const columns: ColumnDef<ToolColumn>[] = [
     accessorKey: "icon",
     header: "Icon",
     cell: ({ row }) => (
-      <div className="w-8">
+      <div className="w-10">
         <Image
-          src={row.original.icon_url}
+          src={row.original.icon}
           alt="Icon"
-          width={100}
-          height={100}
+          width={1000}
+          height={1000}
           loading="eager"
           className="object-contain"
           style={{ width: "100%", height: "auto" }}
@@ -33,7 +37,6 @@ export const columns: ColumnDef<ToolColumn>[] = [
   },
   {
     id: "actions",
-    header: "Actions",
-    cell: ({ row }) => <CellAction data={row.original} endpoint="tool" />,
+    cell: ({ row }) => <CellAction initialData={row.original} />,
   },
 ];

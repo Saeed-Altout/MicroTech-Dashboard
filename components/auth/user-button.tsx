@@ -1,7 +1,7 @@
 "use client";
 
+import { useTransition } from "react";
 import { FaUser } from "react-icons/fa";
-import { ExitIcon } from "@radix-ui/react-icons";
 
 import {
   DropdownMenu,
@@ -10,27 +10,27 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { logout } from "@/actions";
-import { useTransition } from "react";
+
+import { LogOut } from "lucide-react";
+import { logout } from "@/actions/logout";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 export const UserButton = () => {
-  const [isPending, startTransition] = useTransition();
-  const router = useRouter();
-  const onLogout = async () => {
+  const [isLoading, startTransition] = useTransition();
+
+  const onClick = async () => {
     startTransition(() => {
       logout().then((data) => {
         if (data?.error) {
-          toast.error(data.error);
+          toast.error(data?.error);
         }
         if (data?.success) {
-          toast.success(data.success);
-          router.refresh();
+          toast.success(data?.success);
+          window.localStorage.setItem("next__%&$", "");
+          window.location.reload();
         }
       });
     });
-
   };
 
   return (
@@ -45,11 +45,11 @@ export const UserButton = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">
         <DropdownMenuItem
-          disabled={isPending}
+          disabled={isLoading}
+          onClick={onClick}
           className="cursor-pointer"
-          onClick={onLogout}
         >
-          <ExitIcon className="h-4 w-4 mr-2" />
+          <LogOut className="h-4 w-4 mr-2" />
           Logout
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -1,42 +1,39 @@
 "use client";
-import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { ProjectColumn } from "@/interface";
-import { FormProjectImagesEdit } from "./form-project-images-edit";
-import { FormProjectImages } from "./form-project-images";
-import { Pencil, Plus } from "lucide-react";
+import { Pen, Plus } from "lucide-react";
+
 import { Separator } from "@/components/ui/separator";
+import { Heading } from "@/components/ui/heading";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function ClientAction({ initialData }: { initialData: ProjectColumn }) {
-  const [action, setAction] = useState<"create" | "edit">("create");
+import { FormAdd } from "./form-add";
+import { ProjectColumn } from "../../../components/columns";
+import { FormEdit } from "./form-edit";
+
+export function ImagesClient({ initialData }: { initialData: ProjectColumn }) {
   return (
     <>
-      <div className="flex justify-between items-center gap-5">
-        <p className="text-sm">you can Add a new images or edit 🧑‍🚀</p>
-        <div className="flex justify-start items-center gap-5">
-          <Button
-            variant="outline"
-            onClick={() => setAction("create")}
-          >
-            Add a new images
-            <Plus className="h-4 w-4 ml-2" />
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => setAction("edit")}
-          >
-            Edit images
-            <Pencil className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
-      </div>
+      <Heading title="Gallery" description="You can add and edit images." />
       <Separator />
-      {action == "edit" ? (
-        <FormProjectImagesEdit initialData={initialData} />
-      ) : (
-        <FormProjectImages initialData={initialData} />
-      )}
+      <Tabs
+        defaultValue={initialData.images.length > 0 ? "edit" : "add"}
+        className="w-full bg-transparent"
+      >
+        <TabsList>
+          <TabsTrigger value="add">
+            <Plus className="h-4 w-4 mr-2" /> Add images
+          </TabsTrigger>
+          <TabsTrigger value="edit">
+            <Pen className="h-4 w-4 mr-2" /> Edit images
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="add">
+          <FormAdd initialData={initialData} />
+        </TabsContent>
+        <TabsContent value="edit">
+          <FormEdit initialData={initialData} />
+        </TabsContent>
+      </Tabs>
     </>
   );
 }

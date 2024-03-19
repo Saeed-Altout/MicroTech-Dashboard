@@ -13,9 +13,9 @@ export const onError = async (error: any) => {
       case 404:
         redirect("/error/not-found");
       case 500:
-        return "Request failed";
+        redirect("/error/not-found");
       default:
-        redirect("/error/un-known");
+        return "Request failed";
     }
   } else {
     return "Something went wrong!";

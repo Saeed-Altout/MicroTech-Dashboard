@@ -1,9 +1,14 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-
-import { MemberColumn } from "@/interface";
 import { CellAction } from "./cell-action";
+
+export interface MemberColumn {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+}
 
 export const columns: ColumnDef<MemberColumn>[] = [
   {
@@ -22,6 +27,6 @@ export const columns: ColumnDef<MemberColumn>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => <CellAction initialData={row.original} />,
   },
 ];
