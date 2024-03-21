@@ -33,7 +33,9 @@ export const CellAction = ({ initialData }: CellActionProps) => {
     initialData?.active ? true : false
   );
 
-  const [isSpecial, setIsSpecial] = useState<boolean>(false);
+  const [isSpecial, setIsSpecial] = useState<boolean>(
+    initialData?.special ? true : false
+  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
@@ -63,16 +65,47 @@ export const CellAction = ({ initialData }: CellActionProps) => {
 
     try {
       setIsLoading(true);
-      await axios.patch(
+      const res = await axios.patch(
         `${process.env.NEXT_PUBLIC_ACTIVATE_PROJECT}?id=${initialData?.id}`,
         {},
         config
       );
 
-      toast.success(
-        `${initialData?.active === 0 ? "Project active." : "project disabled."}`
-      );
+      toast.success(res.data.message);
       setIsActive(initialData?.active ? false : true);
+      router.refresh();
+    } catch (error) {
+      const message = onError(error);
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const onSpecial = async () => {
+    const token = window.localStorage.getItem("next__%&$");
+
+    const config: AxiosRequestConfig = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    try {
+      setIsLoading(true);
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_SPECIAL_PROJECT}?id=${initialData?.id}`,
+        {},
+        config
+      );
+
+      toast.success(
+        `${
+          initialData?.special === 0
+            ? "Project special."
+            : "project not special."
+        }`
+      );
+      setIsSpecial(initialData?.special ? false : true);
       router.refresh();
     } catch (error) {
       const message = onError(error);
@@ -135,7 +168,7 @@ export const CellAction = ({ initialData }: CellActionProps) => {
           disabled={isLoading || isPending}
           variant="ghost"
           size="icon"
-          onClick={() => setIsSpecial((prev) => !prev)}
+          onClick={onSpecial}
         >
           {isSpecial ? (
             <Star className="h-5 w-5" />

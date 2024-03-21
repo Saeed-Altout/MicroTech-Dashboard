@@ -7,7 +7,6 @@ export default async function NewProjectPage({
   params: { id: string };
 }) {
   const project = await getProjectById(params.id);
-  console.log(project);
 
   return (
     <div className="flex-col">

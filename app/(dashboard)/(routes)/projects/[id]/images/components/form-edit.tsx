@@ -136,6 +136,7 @@ export const FormEdit = ({ initialData }: { initialData: ProjectColumn }) => {
         config
       );
       toast.success("Images edited.");
+      onCancel();
     } catch (error) {
       const message = onError(error);
       toast.error(message);

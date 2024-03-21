@@ -18,6 +18,7 @@ export interface ProjectColumn {
     platform: string;
   }[];
   active: number | string;
+  special: number | string;
   created_at: string;
   updated_at: string;
   cover_url: string;

@@ -307,7 +307,7 @@ export const FormProject = ({
         <AdvantagesPart />
         <LinksPart />
         <SelectPart constantData={constantData} />
-        {/* <CheckPart /> */}
+        <CheckPart />
         <div className="pt-5 flex items-center justify-end gap-4 w-full">
           <Button
             type="button"
