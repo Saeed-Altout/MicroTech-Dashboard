@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -25,9 +26,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { verificationSchema } from "@/schemas";
 import { axios } from "@/lib/axios";
 import { useVerificationModal } from "@/hooks/user-verification-modal";
-
 export const VerificationModal = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [cookies, setCookie] = useCookies(["access-token"]);
+
   const router = useRouter();
   const verificationModal = useVerificationModal();
 
@@ -37,6 +39,10 @@ export const VerificationModal = () => {
       code: "",
     },
   });
+
+  const setIsLoggedIn = async (token: string) => {
+    setCookie("access-token", token);
+  };
 
   const onCancel = () => {
     verificationModal.onClose();
@@ -55,6 +61,7 @@ export const VerificationModal = () => {
       if (res.data) {
         localStorage.setItem("access-token", res?.data?.data?.token || "");
         localStorage.setItem("user", JSON.stringify(res?.data?.data) || "{}");
+        setIsLoggedIn(res?.data?.data?.token || "");
       }
       toast.success("Success!");
       onCancel();
