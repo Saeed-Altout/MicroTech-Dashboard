@@ -9,7 +9,7 @@ export default function AuthLayout({
   const isLoggedIn = cookies().has("access-token");
 
   if (isLoggedIn) {
-    redirect("/");
+    redirect("/dashboard");
   }
 
   return (

@@ -26,9 +26,10 @@ import { Spinner } from "@/components/ui/spinner";
 import { verificationSchema } from "@/schemas";
 import { axios } from "@/lib/axios";
 import { useVerificationModal } from "@/hooks/user-verification-modal";
+
 export const VerificationModal = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [cookies, setCookie] = useCookies(["access-token"]);
+  const [_cookies, setCookie] = useCookies(["access-token"]);
 
   const router = useRouter();
   const verificationModal = useVerificationModal();
