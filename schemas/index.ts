@@ -14,3 +14,9 @@ export const verificationSchema = z.object({
     message: "Code is required",
   }),
 });
+
+export const settingsSchema = z.object({
+  password: z.string().min(2, {
+    message: "Password is required",
+  }),
+});
