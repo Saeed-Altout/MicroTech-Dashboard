@@ -6,7 +6,7 @@ export default function AuthLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isLoggedIn = cookies().has("access-token");
+  const isLoggedIn = cookies().get("access-token");
 
   if (isLoggedIn) {
     redirect("/");
