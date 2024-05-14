@@ -31,11 +31,13 @@ export const WrapperForm = ({
       </CardHeader>
       <CardContent>{children}</CardContent>
       <CardFooter>
-        <FooterForm
-          backButtonLabel={backButtonLabel}
-          backButtonHref={backButtonHref}
-          backButtonDescription={backButtonDescription}
-        />
+        {backButtonLabel && backButtonHref && backButtonDescription && (
+          <FooterForm
+            backButtonLabel={backButtonLabel}
+            backButtonHref={backButtonHref}
+            backButtonDescription={backButtonDescription}
+          />
+        )}
       </CardFooter>
     </Card>
   );

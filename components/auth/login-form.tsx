@@ -20,19 +20,23 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { WrapperForm } from "@/components/auth/wrapper-form";
+import { VerificationModal } from "@/components/modals/verification-modal";
 
 import { axios } from "@/lib/axios";
 import { loginForm } from "@/schemas";
+import { useVerificationModal } from "@/hooks/user-verification-modal";
 
 export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+  const verificationModal = useVerificationModal();
 
   const form = useForm<z.infer<typeof loginForm>>({
     resolver: zodResolver(loginForm),
     defaultValues: {
-      email: "",
+      user_name: "",
       password: "",
     },
   });
@@ -40,15 +44,9 @@ export const LoginForm = () => {
   const onSubmit = async (values: z.infer<typeof loginForm>) => {
     try {
       setIsLoading(true);
-      const res = await axios.post("user/auth/login", values);
-
-      if (res.data) {
-        localStorage.setItem("user", JSON.stringify(res.data.data || ""));
-        localStorage.setItem("access_token", res.data.data.token || "");
-      }
-
-      toast.error("Success!");
-      router.push("/");
+      await axios.post("auth/login", values);
+      verificationModal.setUsername(values.user_name || "");
+      toast.success("Please, check your email.");
     } catch (error) {
       if (error instanceof AxiosError) {
         toast.error(error?.response?.data?.message || "Something went wrong!");
@@ -62,24 +60,25 @@ export const LoginForm = () => {
     <WrapperForm
       title="Login"
       description="Sign in and enjoy."
-      backButtonDescription="Don't have an account ?!"
-      backButtonHref="/auth/register"
-      backButtonLabel="Register"
+      backButtonDescription=""
+      backButtonHref=""
+      backButtonLabel=""
     >
+      <VerificationModal />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-5">
             <FormField
               control={form.control}
-              name="email"
+              name="user_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input
                       disabled={isLoading}
-                      type="email"
-                      placeholder="email"
+                      type="text"
+                      placeholder="username"
                       {...field}
                     />
                   </FormControl>
@@ -105,6 +104,15 @@ export const LoginForm = () => {
                 </FormItem>
               )}
             />
+            <Button
+              size="sm"
+              disabled={isLoading}
+              type="button"
+              variant="link"
+              onClick={() => verificationModal.onOpen()}
+            >
+              Do you have code?
+            </Button>
           </div>
           <Button
             size="sm"
@@ -112,7 +120,7 @@ export const LoginForm = () => {
             type="submit"
             className="w-full"
           >
-            Login
+            Login {isLoading && <Spinner className="text-background ml-2" />}
           </Button>
         </form>
       </Form>
