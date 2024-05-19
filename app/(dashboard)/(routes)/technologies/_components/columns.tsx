@@ -37,15 +37,6 @@ export const columns: ColumnDef<TechnologyColumn>[] = [
     ),
   },
   {
-    accessorKey: "number_project",
-    header: "Project",
-    cell: ({ row }) => (
-      <p className="text-xs text-muted-foreground">
-        use in ({row.original.number_project}) project
-      </p>
-    ),
-  },
-  {
     accessorKey: "id",
     header: "",
     cell: ({ row }) => <RowActions data={row.original} />,
