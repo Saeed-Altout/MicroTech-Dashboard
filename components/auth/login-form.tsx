@@ -30,6 +30,7 @@ import { useVerificationModal } from "@/hooks/user-verification-modal";
 
 export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const router = useRouter();
   const verificationModal = useVerificationModal();
 
