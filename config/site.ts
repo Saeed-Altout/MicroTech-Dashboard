@@ -1,4 +1,4 @@
-import { Home, Settings } from "lucide-react";
+import { Code, Home, Settings } from "lucide-react";
 
 export const siteConfig = {
   name: "MicroTech Dashboard",
@@ -9,12 +9,17 @@ export const siteConfig = {
 export const routes = [
   {
     label: "Dashboard",
-    href: "/dashboard",
+    href: "/",
     icon: Home,
   },
   {
     label: "Settings",
-    href: "/dashboard/settings",
+    href: "/settings",
     icon: Settings,
+  },
+  {
+    label: "Technologies",
+    href: "/technologies",
+    icon: Code,
   },
 ];

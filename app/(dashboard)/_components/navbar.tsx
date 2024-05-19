@@ -59,8 +59,18 @@ export const Navbar = () => {
       <div>
         <Breadcrumb className="flex">
           <BreadcrumbList>
+            {pathname.split("")[0] === "/" && (
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/" className="capitalize">
+                    home
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            )}
             {pathname.split("/")[1] && (
               <BreadcrumbItem>
+                <BreadcrumbSeparator />
                 <BreadcrumbLink asChild>
                   <Link
                     href={`/${pathname.split("/")[1]}`}
