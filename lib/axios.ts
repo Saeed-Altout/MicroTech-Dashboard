@@ -1,8 +1,13 @@
 "use client";
 
 import Axios from "axios";
+import { toast } from "sonner";
 
 export const axios = Axios.create({
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+});
+
+const axiosAuth = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 });
 
@@ -17,20 +22,18 @@ axios.interceptors.request.use((config) => {
 const refreshAccessToken = async () => {
   try {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-    const response = await axios.get("auth/refresh_token", {
+    const response = await axiosAuth.get("auth/refresh_token", {
       headers: {
         Authorization: `Bearer ${user.refresh_token || ""}`,
       },
     });
-
-    const { token } = response.data.data;
+    const token = response.data.data.token;
     localStorage.setItem("access_token", token);
     return token;
   } catch (error) {
-    console.error("Failed to refresh token", error);
-    localStorage.removeItem("user");
-    localStorage.removeItem("access_token");
+    // localStorage.removeItem("user");
+    // localStorage.removeItem("access_token");
+    // window.location.assign("/auth/login");
     return null;
   }
 };
@@ -44,7 +47,6 @@ axios.interceptors.response.use(
     if (response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       const newAccessToken = await refreshAccessToken();
-
       if (newAccessToken) {
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axios(originalRequest);
@@ -52,7 +54,7 @@ axios.interceptors.response.use(
     }
 
     if (response?.status === 403) {
-      console.error(
+      toast.error(
         "Access forbidden: you do not have the necessary permissions"
       );
     }
@@ -60,3 +62,70 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+abstract class DataFetcher {
+  abstract fetchData(url: string): Promise<any>;
+  abstract postData(
+    url: string,
+    data: any,
+    messageSuccess?: string,
+    messageError?: string
+  ): Promise<void>;
+
+  abstract deleteData(
+    url: string,
+    messageSuccess?: string,
+    messageError?: string
+  ): Promise<void>;
+}
+
+export class AxiosData extends DataFetcher {
+  async fetchData(url: string) {
+    try {
+      const response = await axios.get(url);
+      return response.data.data;
+    } catch (error) {
+      if (Axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message || "Something went wrong!");
+      }
+      throw error;
+    }
+  }
+
+  async postData(
+    url: string,
+    data: any,
+    messageSuccess?: string,
+    messageError?: string
+  ) {
+    try {
+      await axios.post(url, data);
+      toast.success(messageSuccess || "Success");
+    } catch (error) {
+      if (Axios.isAxiosError(error)) {
+        toast.error(
+          error?.response?.data?.message ||
+            messageError ||
+            "Something went wrong!"
+        );
+      }
+    }
+  }
+
+  async deleteData(
+    url: string,
+    messageSuccess?: string,
+    messageError?: string
+  ) {
+    try {
+      await axios.delete(url);
+      toast.success(messageSuccess || "Deleted successfully!");
+    } catch (error) {
+      if (Axios.isAxiosError(error)) {
+        toast.error(
+          error?.response?.data?.message || messageError || "Failed to delete!"
+        );
+      }
+    }
+  }
+}
