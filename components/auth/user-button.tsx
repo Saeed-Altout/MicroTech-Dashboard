@@ -49,7 +49,7 @@ export const UserButton = () => {
             className="object-cover overflow-hidden rounded-full block dark:hidden"
           />
           <Image
-            src="/logo-icon.svg"
+            src="/logo-icon-dark.svg"
             width={25}
             height={25}
             alt="Avatar"
