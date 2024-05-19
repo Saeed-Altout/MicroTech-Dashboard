@@ -17,9 +17,4 @@ export const routes = [
     href: "/settings",
     icon: Settings,
   },
-  {
-    label: "Technologies",
-    href: "/technologies",
-    icon: Code,
-  },
 ];
