@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { Settings, User } from "lucide-react";
 
 import {
@@ -14,7 +16,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 
+import { axios } from "@/lib/axios";
+
 export const UserButton = () => {
+  const router = useRouter();
+
+  const onLogout = async () => {
+    try {
+      await axios.get("auth/logout");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user");
+      toast.error("Success.");
+      router.push("/auth/login");
+    } catch (error) {
+      toast.error("Something went wrong!");
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -43,18 +61,13 @@ export const UserButton = () => {
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Link href="/dashboard/profile" className="flex items-center">
-            <User className="h-4 w-4 mr-2" /> Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/dashboard/settings" className="flex items-center">
+          <Link href="/settings" className="flex items-center">
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={onLogout}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
