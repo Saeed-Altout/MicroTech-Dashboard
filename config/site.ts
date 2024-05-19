@@ -7,6 +7,7 @@ import {
   Mailbox,
   Target,
   Users,
+  Folder,
 } from "lucide-react";
 
 export const siteConfig = {
@@ -22,9 +23,9 @@ export const routes = [
     icon: Home,
   },
   {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
+    label: "Projects",
+    href: "/projects",
+    icon: Folder,
   },
   {
     label: "Technologies",
@@ -50,5 +51,10 @@ export const routes = [
     label: "Members",
     href: "/members",
     icon: Users,
+  },
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: Settings,
   },
 ];
