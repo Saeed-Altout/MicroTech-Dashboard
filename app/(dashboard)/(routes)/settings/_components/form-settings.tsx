@@ -36,7 +36,7 @@ export const FormSettings = () => {
   });
 
   const onCancel = () => {
-    router.push("/dashboard");
+    router.push("/");
   };
 
   const onSubmit = async (values: z.infer<typeof settingsSchema>) => {
