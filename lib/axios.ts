@@ -1,51 +1,62 @@
 "use client";
 
-import Axios, { AxiosResponse } from "axios";
+import Axios from "axios";
 
 export const axios = Axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BASE_URL}`,
-});
-
-const axiosRefresh = Axios.create({
-  baseURL: `${process.env.NEXT_PUBLIC_BASE_URL}`,
-});
-
-axiosRefresh.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const { refresh_token } = user;
-  console.log(refresh_token);
-
-  config.headers.Authorization = `Bearer ${refresh_token}`;
-  return config;
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
 });
 
 axios.interceptors.request.use((config) => {
-  const token = localStorage.getItem("access_token");
-  config.headers.Authorization = `Bearer ${token}`;
+  const accessToken = localStorage.getItem("access_token");
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
   return config;
 });
 
+const refreshAccessToken = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    const response = await axios.get("auth/refresh_token", {
+      headers: {
+        Authorization: `Bearer ${user.refresh_token || ""}`,
+      },
+    });
+
+    const { token } = response.data.data;
+    localStorage.setItem("access_token", token);
+    return token;
+  } catch (error) {
+    console.error("Failed to refresh token", error);
+    localStorage.removeItem("user");
+    localStorage.removeItem("access_token");
+    return null;
+  }
+};
+
 axios.interceptors.response.use(
-  (response: AxiosResponse) => {
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    const { response } = error;
+    const { config, response } = error;
+    const originalRequest = config;
 
-    if (response.status === 401) {
-      const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const newAccessToken = await refreshAccessToken();
 
-      const res = await axiosRefresh.get("auth/refresh_token");
-
-      localStorage.setItem("access_token", res.data.data.token);
-      const newUser = {
-        ...user,
-        ...res.data.data,
-      };
-      localStorage.setItem("user", JSON.stringify(newUser));
-      return error.config();
+      if (newAccessToken) {
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axios(originalRequest);
+      }
     }
 
-    throw error;
+    if (response?.status === 403) {
+      console.error(
+        "Access forbidden: you do not have the necessary permissions"
+      );
+    }
+
+    return Promise.reject(error);
   }
 );
