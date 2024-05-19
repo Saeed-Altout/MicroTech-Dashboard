@@ -5,6 +5,9 @@ import { toast } from "sonner";
 
 export const axios = Axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
 });
 
 const axiosAuth = Axios.create({
@@ -85,7 +88,7 @@ export class AxiosData extends DataFetcher {
       const response = await axios.get(url);
       return response.data.data;
     } catch (error) {
-      if (Axios.isAxiosError(error)) {
+      if (Axios.isAxiosError(error) && !url.includes("new")) {
         toast.error(error.response?.data.message || "Something went wrong!");
       }
       throw error;

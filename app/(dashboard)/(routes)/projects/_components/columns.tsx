@@ -16,6 +16,7 @@ interface Item {
   updated_at: string;
   icon_url: string;
 }
+
 export type ProjectColumn = {
   id: number;
   title: string;
@@ -23,12 +24,12 @@ export type ProjectColumn = {
   functionality: string;
   category: string;
   about: string;
-  advantages: string | null;
+  advantages: string[];
   links: Array<{ link: string; platform: string }> | null;
   likes: number;
   comments: number;
-  active: number;
-  special: number;
+  active: boolean;
+  special: boolean;
   deleted_at: string | null;
   created_at: string;
   cover_url: string;
@@ -81,12 +82,16 @@ export const columns: ColumnDef<ProjectColumn>[] = [
   {
     accessorKey: "about",
     header: "About",
-    cell: ({ row }) => <p className="truncate">{row.original.about}</p>,
+    cell: ({ row }) => (
+      <p className="truncate max-w-[300px]">{row.original.about}</p>
+    ),
   },
   {
     accessorKey: "description",
     header: "Description",
-    cell: ({ row }) => <p className="truncate">{row.original.description}</p>,
+    cell: ({ row }) => (
+      <p className="truncate max-w-[200px]">{row.original.description}</p>
+    ),
   },
   {
     accessorKey: "technologies",
