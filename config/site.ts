@@ -6,6 +6,7 @@ import {
   Stars,
   Mailbox,
   Target,
+  Users,
 } from "lucide-react";
 
 export const siteConfig = {
@@ -44,5 +45,10 @@ export const routes = [
     label: "Work Types",
     href: "/work-types",
     icon: Target,
+  },
+  {
+    label: "Members",
+    href: "/members",
+    icon: Users,
   },
 ];
