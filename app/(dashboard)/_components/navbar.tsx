@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Package2, PanelLeft } from "lucide-react";
 
@@ -20,7 +21,16 @@ import { cn } from "@/lib/utils";
 import { UserButton } from "@/components/auth/user-button";
 
 export const Navbar = () => {
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
