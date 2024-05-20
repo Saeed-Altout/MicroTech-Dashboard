@@ -52,9 +52,4 @@ export const routes = [
     href: "/members",
     icon: Users,
   },
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
-  },
 ];

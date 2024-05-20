@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Package2, PanelLeft } from "lucide-react";
+import { Package2, PanelLeft, Plus, Settings } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -41,10 +41,13 @@ export const Navbar = () => {
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="sm:max-w-xs">
+        <SheetContent
+          side="left"
+          className="sm:max-w-xs h-full flex flex-col justify-between"
+        >
           <nav className="grid gap-6 text-lg font-medium">
             <Link
-              href="/dashboard"
+              href="/"
               className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
             >
               <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
@@ -63,7 +66,30 @@ export const Navbar = () => {
                 {label}
               </Link>
             ))}
+            <div>
+              <div
+                role="button"
+                className={cn(
+                  "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Plus className="h-5 w-5" />
+                New Project
+              </div>
+            </div>
           </nav>
+          <div className="mt-auto">
+            <Link
+              href="/settings"
+              className={cn(
+                "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground",
+                pathname === "/settings" && "text-foreground"
+              )}
+            >
+              <Settings className="h-5 w-5" />
+              Settings
+            </Link>
+          </div>
         </SheetContent>
       </Sheet>
       <div>
