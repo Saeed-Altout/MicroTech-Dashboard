@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { GalleryImages } from "./gallery-images";
 import { GalleryForm } from "./form";
+import { GalleryEditForm } from "./edit-form";
 
 const axiosData = new AxiosData();
 
@@ -54,7 +55,9 @@ export const ClientGallery = () => {
           <TabsContent value="upload">
             <GalleryForm />
           </TabsContent>
-          <TabsContent value="edit">form edit image</TabsContent>
+          <TabsContent value="edit">
+            <GalleryEditForm initialData={data || []} />
+          </TabsContent>
         </Tabs>
       </div>
     );
