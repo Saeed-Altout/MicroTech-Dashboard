@@ -115,8 +115,10 @@ export const GalleryForm = () => {
 
     await axiosData
       .postData(endpoint, data, messageSuccess, messageError)
-      .then(() => {
-        onCancel();
+      .then((data) => {
+        if (data?.success) {
+          onCancel();
+        }
       })
       .finally(() => {
         setIsLoading(false);

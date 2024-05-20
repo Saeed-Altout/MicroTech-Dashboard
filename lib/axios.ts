@@ -104,6 +104,7 @@ export class AxiosData extends DataFetcher {
     try {
       await axios.post(url, data);
       toast.success(messageSuccess || "Success");
+      return { success: true };
     } catch (error) {
       if (Axios.isAxiosError(error)) {
         toast.error(
@@ -123,6 +124,7 @@ export class AxiosData extends DataFetcher {
     try {
       await axios.delete(url);
       toast.success(messageSuccess || "Deleted successfully!");
+      return { success: true };
     } catch (error) {
       if (Axios.isAxiosError(error)) {
         toast.error(

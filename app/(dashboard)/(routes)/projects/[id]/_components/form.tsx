@@ -243,8 +243,10 @@ export const ProjectForm = ({
         messageSuccess,
         messageError
       )
-      .then(() => {
-        onCancel();
+      .then((data) => {
+        if (data?.success) {
+          onCancel();
+        }
       })
       .finally(() => {
         setIsLoading(false);

@@ -123,8 +123,10 @@ export const GalleryEditForm = ({
 
     await axiosData
       .deleteData(endpoint, messageSuccess, messageError)
-      .then(() => {
-        router.refresh();
+      .then((data) => {
+        if (data?.success) {
+          router.refresh();
+        }
       })
       .finally(() => {
         setIsLoading(false);
@@ -159,8 +161,10 @@ export const GalleryEditForm = ({
 
     await axiosData
       .postData(endpoint, data, messageSuccess, messageError)
-      .then(() => {
-        onCancel();
+      .then((data) => {
+        if (data?.success) {
+          onCancel();
+        }
       })
       .finally(() => {
         setIsLoading(false);
