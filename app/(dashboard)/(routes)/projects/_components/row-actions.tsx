@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { AxiosData } from "@/lib/axios";
-import { Edit, Trash } from "lucide-react";
+import { Edit, ImagePlus, Trash } from "lucide-react";
 
 import { ProjectColumn } from "./columns";
 
@@ -37,6 +37,18 @@ export const RowActions = ({ data }: { data: ProjectColumn }) => {
       />
 
       <div className="flex items-center gap-x-4">
+        <Button
+          disabled={isLoading}
+          variant="outline"
+          size="icon"
+          className="h-8 w-8"
+          asChild
+        >
+          <Link href={`/projects/${data.id}/gallery`}>
+            <span className="sr-only">Images</span>
+            <ImagePlus className="h-4 w-4" />
+          </Link>
+        </Button>
         <Button
           disabled={isLoading}
           variant="outline"
