@@ -146,7 +146,7 @@ export const ProjectModal = () => {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      rows={6}
+                      rows={2}
                       disabled={isLoading}
                       placeholder="description"
                       {...field}
@@ -161,7 +161,7 @@ export const ProjectModal = () => {
               name="cover"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="cursor-pointer h-[250px] w-full border-dashed border rounded-md flex justify-center items-center overflow-hidden">
+                  <FormLabel className="cursor-pointer h-[200px] w-full border-dashed border rounded-md flex justify-center items-center overflow-hidden">
                     {field.value ? (
                       <div className="h-auto">
                         <Image
