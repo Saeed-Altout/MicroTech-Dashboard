@@ -17,6 +17,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -70,7 +75,7 @@ export const VerificationModal = () => {
   return (
     <Modal
       title="Verification Code"
-      description="Check your email then copay our code and past in fields here."
+      description="Check your email then copy code and past in one-time."
       isOpen={verificationModal.isOpen}
       onClose={verificationModal.onClose}
     >
@@ -81,14 +86,19 @@ export const VerificationModal = () => {
               control={form.control}
               name="code"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Code</FormLabel>
+                <FormItem className="text-center">
+                  <FormLabel>Enter your code</FormLabel>
                   <FormControl>
-                    <Input
-                      disabled={isLoading}
-                      placeholder="******"
-                      {...field}
-                    />
+                    <InputOTP maxLength={6} {...field}>
+                      <InputOTPGroup className="mx-auto">
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
