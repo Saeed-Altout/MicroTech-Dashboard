@@ -21,14 +21,17 @@ export const columns: ColumnDef<MemberColumn>[] = [
   {
     accessorKey: "name",
     header: "Name",
+    cell: ({ row }) => <p className="text-nowrap">{row.original.name}</p>,
   },
   {
     accessorKey: "email",
     header: "Email",
+    cell: ({ row }) => <p className="text-nowrap">{row.original.email}</p>,
   },
   {
     accessorKey: "phone",
     header: "Phone",
+    cell: ({ row }) => <p className="text-nowrap">{row.original.phone}</p>,
   },
   {
     accessorKey: "id",
