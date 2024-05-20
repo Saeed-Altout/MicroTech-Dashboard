@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import { routes } from "@/config/site";
 import { useModal } from "@/hooks/use-modal";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 export const Sidebar = () => {
   const pathname = usePathname();
@@ -60,8 +61,8 @@ export const Sidebar = () => {
           </Tooltip>
         </div>
 
-        <div className="mt-auto">
-          {" "}
+        <div className="mt-auto flex flex-col items-center justify-center gap-y-4">
+          <ModeToggle />
           <Tooltip>
             <TooltipTrigger asChild>
               <Link

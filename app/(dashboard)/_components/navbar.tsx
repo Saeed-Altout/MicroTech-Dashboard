@@ -20,6 +20,7 @@ import { routes } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@/components/auth/user-button";
 import { useModal } from "@/hooks/use-modal";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 export const Navbar = () => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
@@ -79,7 +80,7 @@ export const Navbar = () => {
               New Project
             </div>
           </nav>
-          <div className="mt-auto">
+          <div className="mt-auto flex items-center justify-between">
             <Link
               href="/settings"
               className={cn(
@@ -90,6 +91,7 @@ export const Navbar = () => {
               <Settings className="h-5 w-5" />
               Settings
             </Link>
+            <ModeToggle />
           </div>
         </SheetContent>
       </Sheet>
