@@ -392,6 +392,8 @@ export const ProjectForm = ({
                     <SelectContent>
                       <SelectItem value="frontend">Frontend</SelectItem>
                       <SelectItem value="backend">Backend</SelectItem>
+                      <SelectItem value="fullstack">Full Stack</SelectItem>
+                      <SelectItem value="software">Software</SelectItem>
                       <SelectItem value="mobile">Mobile</SelectItem>
                       <SelectItem value="ui&ux">Ui&UX</SelectItem>
                     </SelectContent>
