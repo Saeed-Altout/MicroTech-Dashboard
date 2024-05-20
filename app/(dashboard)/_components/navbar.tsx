@@ -24,6 +24,7 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 
 export const Navbar = () => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const pathname = usePathname();
   const modal = useModal();
 
@@ -37,7 +38,7 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-      <Sheet>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button size="icon" variant="outline" className="sm:hidden">
             <PanelLeft className="h-5 w-5" />
@@ -50,6 +51,7 @@ export const Navbar = () => {
         >
           <nav className="grid gap-6 text-lg font-medium">
             <Link
+              onClick={() => setIsOpen(false)}
               href="/"
               className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
             >
@@ -60,6 +62,7 @@ export const Navbar = () => {
               <Link
                 key={index}
                 href={href}
+                onClick={() => setIsOpen(false)}
                 className={cn(
                   "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground",
                   pathname === href && "text-foreground"
@@ -70,7 +73,9 @@ export const Navbar = () => {
               </Link>
             ))}
             <div
-              onClick={() => modal.onOpen()}
+              onClick={() => {
+                modal.onOpen(), setIsOpen(false);
+              }}
               role="button"
               className={cn(
                 "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
@@ -82,6 +87,7 @@ export const Navbar = () => {
           </nav>
           <div className="mt-auto flex items-center justify-between">
             <Link
+              onClick={() => setIsOpen(false)}
               href="/settings"
               className={cn(
                 "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground",
