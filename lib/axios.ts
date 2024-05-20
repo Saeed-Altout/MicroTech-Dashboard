@@ -73,13 +73,13 @@ abstract class DataFetcher {
     data: any,
     messageSuccess?: string,
     messageError?: string
-  ): Promise<void>;
+  ): Promise<any>;
 
   abstract deleteData(
     url: string,
     messageSuccess?: string,
     messageError?: string
-  ): Promise<void>;
+  ): Promise<any>;
 }
 
 export class AxiosData extends DataFetcher {
