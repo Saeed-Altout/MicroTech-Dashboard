@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { routes } from "@/config/site";
+import { useModal } from "@/hooks/use-modal";
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const modal = useModal();
 
   return (
     <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -46,6 +48,7 @@ export const Sidebar = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <div
+                onClick={() => modal.onOpen()}
                 role="button"
                 className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
               >

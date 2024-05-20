@@ -1,6 +1,7 @@
 import { Sidebar } from "./_components/sidebar";
 import { Navbar } from "./_components/navbar";
 import { AuthProvider } from "@/providers/auth-provider";
+import { ProjectModal } from "@/components/modals/project-modal";
 
 export default function DashboardLayout({
   children,
@@ -9,6 +10,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <AuthProvider>
+      <ProjectModal />
       <div className="flex min-h-screen w-full flex-col bg-background">
         <Sidebar />
         <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">

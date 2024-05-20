@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ImagePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { AxiosData } from "@/lib/axios";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,6 +43,7 @@ const formSchema = z.object({
 
 export const ProjectModal = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const [files, setFiles] = useState<File[]>([]);
   const router = useRouter();
   const modal = useModal();
@@ -101,6 +102,14 @@ export const ProjectModal = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
 
   return (
     <Modal

@@ -19,10 +19,12 @@ import { Button } from "@/components/ui/button";
 import { routes } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { UserButton } from "@/components/auth/user-button";
+import { useModal } from "@/hooks/use-modal";
 
 export const Navbar = () => {
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const pathname = usePathname();
+  const modal = useModal();
 
   useEffect(() => {
     setIsMounted(true);
@@ -66,16 +68,15 @@ export const Navbar = () => {
                 {label}
               </Link>
             ))}
-            <div>
-              <div
-                role="button"
-                className={cn(
-                  "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Plus className="h-5 w-5" />
-                New Project
-              </div>
+            <div
+              onClick={() => modal.onOpen()}
+              role="button"
+              className={cn(
+                "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Plus className="h-5 w-5" />
+              New Project
             </div>
           </nav>
           <div className="mt-auto">
