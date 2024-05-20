@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AxiosError } from "axios";
-import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -22,20 +20,20 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Spinner } from "@/components/ui/spinner";
 
-import { axios } from "@/lib/axios";
+import { AxiosAuth } from "@/lib/axios";
 import { verificationSchema } from "@/schemas";
 import { useVerificationModal } from "@/hooks/user-verification-modal";
 
+const axiosAuth = new AxiosAuth();
+
 export const VerificationModal = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const router = useRouter();
   const verificationModal = useVerificationModal();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof verificationSchema>>({
     resolver: zodResolver(verificationSchema),
@@ -47,31 +45,36 @@ export const VerificationModal = () => {
   const onCancel = () => {
     verificationModal.onClose();
     form.reset();
+    router.refresh();
     router.push("/");
   };
 
   const onSubmit = async (values: z.infer<typeof verificationSchema>) => {
-    try {
-      setIsLoading(true);
-      const res = await axios.post("auth/verify_code", {
-        ...values,
-        user_name: verificationModal.userName,
-      });
+    setIsLoading(true);
+    const endpoint = "auth/verify_code";
+    const messageSuccess = "Login successfully!";
+    const messageError = "Failed to login!";
 
-      if (res.data) {
-        localStorage.setItem("access-token", res?.data?.data?.token || "");
-        localStorage.setItem("user", JSON.stringify(res?.data?.data) || "{}");
-      }
-      toast.success("Success!");
-      onCancel();
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || "Something went wrong!");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    await axiosAuth
+      .verification(
+        endpoint,
+        {
+          ...values,
+          user_name: verificationModal.userName,
+        },
+        messageSuccess,
+        messageError
+      )
+      .then((data) => {
+        if (data?.success) {
+          onCancel();
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
+
   return (
     <Modal
       title="Verification Code"

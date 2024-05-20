@@ -134,3 +134,66 @@ export class AxiosData extends DataFetcher {
     }
   }
 }
+
+abstract class Auth {
+  abstract login(
+    url: string,
+    data: any,
+    messageSuccess?: string,
+    messageError?: string
+  ): Promise<any>;
+
+  abstract verification(
+    url: string,
+    data: any,
+    messageSuccess?: string,
+    messageError?: string
+  ): Promise<any>;
+}
+
+export class AxiosAuth extends Auth {
+  async login(
+    url: string,
+    data: any,
+    messageSuccess?: string,
+    messageError?: string
+  ) {
+    try {
+      await axios.post(url, data);
+      toast.success(messageSuccess || "Success");
+      return { success: true };
+    } catch (error) {
+      if (Axios.isAxiosError(error)) {
+        toast.error(
+          error?.response?.data?.message ||
+            messageError ||
+            "Something went wrong!"
+        );
+      }
+    }
+  }
+  async verification(
+    url: string,
+    data: any,
+    messageSuccess?: string,
+    messageError?: string
+  ) {
+    try {
+      const res = await axios.post(url, data);
+      toast.success(messageSuccess || "Success");
+      if (res.data) {
+        localStorage.setItem("access_token", res?.data?.data?.token || "");
+        localStorage.setItem("user", JSON.stringify(res?.data?.data) || "{}");
+      }
+      return { success: true };
+    } catch (error) {
+      if (Axios.isAxiosError(error)) {
+        toast.error(
+          error?.response?.data?.message ||
+            messageError ||
+            "Something went wrong!"
+        );
+      }
+    }
+  }
+}

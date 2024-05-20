@@ -1,10 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-
-import { AxiosError } from "axios";
-import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,14 +20,14 @@ import { Spinner } from "@/components/ui/spinner";
 import { WrapperForm } from "@/components/auth/wrapper-form";
 import { VerificationModal } from "@/components/modals/verification-modal";
 
-import { axios } from "@/lib/axios";
 import { loginForm } from "@/schemas";
+import { AxiosAuth } from "@/lib/axios";
 import { useVerificationModal } from "@/hooks/user-verification-modal";
+
+const axiosAuth = new AxiosAuth();
 
 export const LoginForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const router = useRouter();
   const verificationModal = useVerificationModal();
 
   const form = useForm<z.infer<typeof loginForm>>({
@@ -43,18 +39,21 @@ export const LoginForm = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof loginForm>) => {
-    try {
-      setIsLoading(true);
-      await axios.post("auth/login", values);
-      verificationModal.setUsername(values.user_name || "");
-      toast.success("Please, check your email.");
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error?.response?.data?.message || "Something went wrong!");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(true);
+    const endpoint = "auth/login";
+    const messageSuccess = "Please, check your email.";
+    const messageError = "";
+
+    await axiosAuth
+      .login(endpoint, values, messageSuccess, messageError)
+      .then((data) => {
+        if (data?.success) {
+          verificationModal.setUsername(values.user_name || "");
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (

@@ -7,8 +7,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("access-token");
-    console.log(token);
+    const token = localStorage.getItem("access_token");
 
     if (!token) {
       router.push("/auth/login");
